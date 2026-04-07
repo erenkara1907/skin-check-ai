@@ -1,15 +1,16 @@
 #!/bin/bash
 INPUT=$(cat)
-FILE=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || echo "")
- 
+FILE=$(echo "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('tool_input',{}).get('file_path',d.get('tool_input',{}).get('path','')))" 2>/dev/null || echo "")
+
 if [[ "$FILE" == *.dart ]]; then
   RESULT=$(flutter analyze --no-pub 2>&1 | tail -3)
   if echo "$RESULT" | grep -q "No issues found"; then
-    echo '{"decision":"allow"}'
+    echo '{"hookSpecificOutput":{"hookEventName":"PostToolUse"}}'
   else
-    echo "{\"decision\":\"allow\",\"reason\":\"flutter analyze: $RESULT\"}"
+    CLEAN=$(echo "$RESULT" | tr '\n' ' ' | sed 's/"/\\"/g')
+    echo "{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"flutter analyze: ${CLEAN}\"}}"
   fi
 else
-  echo '{"decision":"allow"}'
+  echo '{"hookSpecificOutput":{"hookEventName":"PostToolUse"}}'
 fi
 exit 0
