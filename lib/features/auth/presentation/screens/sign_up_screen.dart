@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,40 +6,41 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/router/app_router.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_glassmorphism_card.dart';
 import '../widgets/auth_gradient_background.dart';
 import '../widgets/auth_gradient_button.dart';
 import '../widgets/auth_logo_header.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/social_login_button.dart';
 
-/// Login screen with glassmorphism card and gradient background.
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+/// Sign up screen with name, email and password fields.
+class SignUpScreen extends ConsumerStatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(authNotifierProvider.notifier).signInWithEmail(
+    await ref.read(authNotifierProvider.notifier).signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          name: _nameController.text.trim(),
         );
   }
 
@@ -55,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Giriş başarısız. Lütfen tekrar deneyin.'),
+            content: Text('Kayıt başarısız. Lütfen tekrar deneyin.'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -72,14 +71,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const AuthLogoHeader(
-                    icon: LucideIcons.scan,
-                    title: 'SkinCheck AI',
-                    subtitle: 'Cildin için AI destekli analiz',
+                    icon: LucideIcons.userPlus,
+                    title: 'Hesap Oluştur',
+                    subtitle: 'Cilt bakım yolculuğuna başla',
+                    gradientColors: [AppColors.secondary, AppColors.primary],
+                    glowColor: AppColors.secondary,
                   ),
                   const SizedBox(height: 32),
                   _buildCard(isDark, isLoading),
                   const SizedBox(height: 24),
-                  _buildSignUpLink(isDark),
+                  _buildLoginLink(isDark),
                 ],
               ),
             ),
@@ -97,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Giriş Yap',
+              'Kayıt Ol',
               style: GoogleFonts.outfit(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -108,6 +109,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
+            AuthTextField(
+              controller: _nameController,
+              label: 'Ad Soyad',
+              hint: 'Adınız Soyadınız',
+              textInputAction: TextInputAction.next,
+              prefixIcon: LucideIcons.user,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'İsim gerekli';
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
             AuthTextField(
               controller: _emailController,
               label: 'E-posta',
@@ -137,15 +150,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const SizedBox(height: 24),
             AuthGradientButton(
-              label: 'Giriş Yap',
+              label: 'Kayıt Ol',
               isLoading: isLoading,
-              onPressed: _handleLogin,
-              gradientColors: const [AppColors.primary, AppColors.primaryDark],
+              onPressed: _handleSignUp,
+              gradientColors: const [
+                AppColors.secondary,
+                AppColors.secondaryDark,
+              ],
             ),
-            const SizedBox(height: 20),
-            _buildDivider(isDark),
-            const SizedBox(height: 20),
-            _buildSocialButtons(isLoading),
           ],
         ),
       ),
@@ -155,69 +167,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
   }
 
-  Widget _buildDivider(bool isDark) {
-    final color = isDark
-        ? AppColors.textSecondaryDark.withValues(alpha: 0.3)
-        : AppColors.textSecondaryLight.withValues(alpha: 0.3);
-    return Row(
-      children: [
-        Expanded(child: Divider(color: color)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'veya',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : AppColors.textSecondaryLight,
-            ),
-          ),
-        ),
-        Expanded(child: Divider(color: color)),
-      ],
-    );
-  }
-
-  Widget _buildSocialButtons(bool isLoading) {
-    final isIOS = _isIOSPlatform();
-    return Row(
-      children: [
-        Expanded(
-          child: SocialLoginButton(
-            provider: SocialProvider.google,
-            isLoading: isLoading,
-            onPressed: isLoading
-                ? null
-                : () => ref
-                    .read(authNotifierProvider.notifier)
-                    .signInWithGoogle(),
-          ),
-        ),
-        if (isIOS) ...[
-          const SizedBox(width: 12),
-          Expanded(
-            child: SocialLoginButton(
-              provider: SocialProvider.apple,
-              isLoading: isLoading,
-              onPressed: isLoading
-                  ? null
-                  : () => ref
-                      .read(authNotifierProvider.notifier)
-                      .signInWithApple(),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildSignUpLink(bool isDark) {
+  Widget _buildLoginLink(bool isDark) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Hesabın yok mu? ',
+          'Zaten hesabın var mı? ',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: isDark
@@ -226,9 +181,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
         GestureDetector(
-          onTap: () => context.push(AppRoutes.signUp),
+          onTap: () => context.pop(),
           child: Text(
-            'Kayıt Ol',
+            'Giriş Yap',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -238,13 +193,5 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ],
     ).animate().fadeIn(delay: 500.ms, duration: 500.ms);
-  }
-
-  bool _isIOSPlatform() {
-    try {
-      return Platform.isIOS;
-    } catch (_) {
-      return false;
-    }
   }
 }
