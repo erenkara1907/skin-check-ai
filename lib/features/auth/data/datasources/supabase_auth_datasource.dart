@@ -1,5 +1,7 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/user_entity.dart';
 
@@ -51,13 +53,29 @@ class SupabaseAuthDataSource {
     return _mapUser(response.user!);
   }
 
-  /// Sign in with Google OAuth.
-  Future<void> signInWithGoogle() async {
-    log.d('Signing in with Google');
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: 'io.supabase.skincheckAI://login-callback/',
+  /// Sign in with Google using native SDK + Supabase ID token.
+  Future<UserEntity> signInWithGoogle() async {
+    log.d('Signing in with Google (native)');
+
+    final googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize(
+      clientId: EnvConfig.googleClientIdIos,
+      serverClientId: EnvConfig.googleWebClientId,
     );
+
+    final account = await googleSignIn.authenticate();
+    final idToken = account.authentication.idToken;
+
+    if (idToken == null) {
+      throw Exception('No ID token from Google');
+    }
+
+    final response = await _client.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+    );
+
+    return _mapUser(response.user!);
   }
 
   /// Sign in with Apple OAuth.

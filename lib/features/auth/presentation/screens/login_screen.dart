@@ -25,10 +25,13 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
+enum _AuthAction { none, email, google, apple }
+
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  _AuthAction _activeAction = _AuthAction.none;
 
   @override
   void dispose() {
@@ -39,6 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _activeAction = _AuthAction.email);
     await ref.read(authNotifierProvider.notifier).signInWithEmail(
           email: _emailController.text.trim(),
           password: _passwordController.text,
@@ -47,11 +51,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
+    ref.watch(authNotifierProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isLoading = authState.isLoading;
 
     ref.listen(authNotifierProvider, (prev, next) {
+      if (!next.isLoading) {
+        setState(() => _activeAction = _AuthAction.none);
+      }
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -77,7 +83,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     subtitle: 'Cildin için AI destekli analiz',
                   ),
                   const SizedBox(height: 32),
-                  _buildCard(isDark, isLoading),
+                  _buildCard(isDark),
                   const SizedBox(height: 24),
                   _buildSignUpLink(isDark),
                 ],
@@ -89,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildCard(bool isDark, bool isLoading) {
+  Widget _buildCard(bool isDark) {
     return AuthGlassmorphismCard(
       child: Form(
         key: _formKey,
@@ -138,14 +144,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 24),
             AuthGradientButton(
               label: 'Giriş Yap',
-              isLoading: isLoading,
+              isLoading: _activeAction == _AuthAction.email,
               onPressed: _handleLogin,
               gradientColors: const [AppColors.primary, AppColors.primaryDark],
             ),
             const SizedBox(height: 20),
             _buildDivider(isDark),
             const SizedBox(height: 20),
-            _buildSocialButtons(isLoading),
+            _buildSocialButtons(),
           ],
         ),
       ),
@@ -179,19 +185,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildSocialButtons(bool isLoading) {
+  Widget _buildSocialButtons() {
     final isIOS = _isIOSPlatform();
+    final anyLoading = _activeAction != _AuthAction.none;
     return Row(
       children: [
         Expanded(
           child: SocialLoginButton(
             provider: SocialProvider.google,
-            isLoading: isLoading,
-            onPressed: isLoading
+            isLoading: _activeAction == _AuthAction.google,
+            onPressed: anyLoading
                 ? null
-                : () => ref
-                    .read(authNotifierProvider.notifier)
-                    .signInWithGoogle(),
+                : () {
+                    setState(() => _activeAction = _AuthAction.google);
+                    ref
+                        .read(authNotifierProvider.notifier)
+                        .signInWithGoogle();
+                  },
           ),
         ),
         if (isIOS) ...[
@@ -199,12 +209,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           Expanded(
             child: SocialLoginButton(
               provider: SocialProvider.apple,
-              isLoading: isLoading,
-              onPressed: isLoading
+              isLoading: _activeAction == _AuthAction.apple,
+              onPressed: anyLoading
                   ? null
-                  : () => ref
-                      .read(authNotifierProvider.notifier)
-                      .signInWithApple(),
+                  : () {
+                      setState(() => _activeAction = _AuthAction.apple);
+                      ref
+                          .read(authNotifierProvider.notifier)
+                          .signInWithApple();
+                    },
             ),
           ),
         ],

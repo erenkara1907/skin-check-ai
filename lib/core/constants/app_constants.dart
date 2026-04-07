@@ -1,9 +1,5 @@
 /// Application-wide constants.
 abstract final class AppConstants {
-  // Supabase — loaded from environment at runtime
-  static const supabaseUrlEnvKey = 'SUPABASE_URL';
-  static const supabaseAnonKeyEnvKey = 'SUPABASE_ANON_KEY';
-
   // Storage buckets
   static const photoBucket = 'skin-photos';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/constants/app_constants.dart';
+import 'core/config/env_config.dart';
 import 'core/router/app_router.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
@@ -14,9 +14,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  await EnvConfig.load();
   await SupabaseService.initialize(
-    url: const String.fromEnvironment(AppConstants.supabaseUrlEnvKey),
-    anonKey: const String.fromEnvironment(AppConstants.supabaseAnonKeyEnvKey),
+    url: EnvConfig.supabaseUrl,
+    anonKey: EnvConfig.supabaseAnonKey,
   );
 
   runApp(const ProviderScope(child: SkinCheckApp()));

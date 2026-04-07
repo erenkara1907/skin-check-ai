@@ -1,88 +1,122 @@
-# Full Feature Pipeline
-# Usage: /feature <description>
+# Feature Pipeline — /feature <description>
 
-Execute a full feature pipeline. Follow ALL phases IN ORDER.
-NEVER skip a phase. ONLY pause at Phase 1 for approval.
-
-## INPUT
-$ARGUMENTS
+You received: $ARGUMENTS
 
 ---
 
-## PHASE 1: PLANNING
+IMPORTANT RULES:
+- Phase 1: DO NOT write any code. Only produce a plan as text.
+- Phase 2-6: Write code, files, run commands freely. Do not ask permission.
+- The plan file and review file include a timestamp in the name to avoid conflicts with previous features.
 
-Think step by step. Create a detailed plan:
-1. Files to create/modify (full paths)
-2. Domain → Data → Presentation layers
-3. Database changes (Supabase MCP)
-4. Test cases needed
-5. Security concerns
-
-Save to: docs/plans/PLAN.md
-
-**STOP. Ask: "Plan hazır. Onaylıyor musun?" Wait for approval.**
+Generate a unique FEATURE_ID from the description (kebab-case, max 3 words).
+Example: "auth system" → "auth-system"
+Use this ID for branch name, plan file, and review file.
 
 ---
 
-## PHASE 2: GIT BRANCH
+## PHASE 1: PLAN ONLY (no code, no files except the plan)
+
+Analyze the request. Produce a plan covering:
+- Files to create/modify (full paths)
+- Domain → Data → Presentation layers
+- Database changes (if any)
+- Test cases
+- Security concerns
+
+Save ONLY this file: docs/plans/<FEATURE_ID>-plan.md
+
+Then say EXACTLY:
+
+"📋 Plan hazır: docs/plans/<FEATURE_ID>-plan.md
+
+Onaylıyor musun? (evet / hayır / değişiklik istiyorum)"
+
+STOP. Do not continue until user says "evet".
+
+---
+
+## PHASE 2: BRANCH
+
+After user approves:
 
 ```bash
+git stash 2>/dev/null || true
 git checkout develop 2>/dev/null || git checkout -b develop
 git pull origin develop 2>/dev/null || true
-git checkout -b feature/<kebab-case-name>
+git checkout -b feature/<FEATURE_ID>
 ```
 
 ---
 
-## PHASE 3: IMPLEMENTATION
+## PHASE 3: IMPLEMENT
 
-1. Database (Supabase MCP)
-2. Domain (Freezed entities, repo interfaces)
-3. Data (DTOs, data sources, repo impl)
-4. Presentation (providers, screens, widgets — FULL DESIGN per CLAUDE.md)
-5. After each layer: build_runner + flutter analyze
+Build everything from the plan:
+1. Database (Supabase MCP if needed)
+2. Domain layer (Freezed entities, repo interfaces)
+3. Data layer (DTOs, data sources, repo implementations)
+4. Presentation (Riverpod providers, screens, widgets)
+5. Design everything per CLAUDE.md design system
+6. After each layer run:
+   - dart run build_runner build --delete-conflicting-outputs
+   - flutter analyze — fix all issues before next layer
 
----
-
-## PHASE 4: TESTING
-
-1. Unit tests (repositories, providers — mocktail)
-2. Widget tests (main screen, critical widgets)
-3. flutter test — fix until all pass
+Do NOT stop. Continue to Phase 4.
 
 ---
 
-## PHASE 5: CODE REVIEW
+## PHASE 4: TEST
 
-Checklist:
-- flutter analyze: 0 issues
-- No files > 250 lines
+1. Write unit tests (repositories, services, providers) — use mocktail
+2. Write widget tests for main screen of this feature
+3. Run: flutter test
+4. If failures: fix and re-run until all pass
+
+Do NOT stop. Continue to Phase 5.
+
+---
+
+## PHASE 5: REVIEW
+
+Run checklist:
+- flutter analyze: must be 0 issues
+- No file > 250 lines
 - No business logic in widgets
-- No hardcoded API keys
-- Dark mode works
-- Loading/error/empty states
+- No hardcoded secrets
+- Dark mode checked
+- Loading/error/empty states present
 
-Save to: docs/reviews/REVIEW.md
+Save to: docs/reviews/<FEATURE_ID>-review.md
+
+Do NOT stop. Continue to Phase 6.
 
 ---
 
-## PHASE 6: COMMIT + PUSH + PR
+## PHASE 6: SHIP
 
 ```bash
 git add -A
-git commit -m "feat: <description>"
-git push -u origin feature/<branch-name>
+git commit -m "feat(<FEATURE_ID>): <short description>
+
+- <change 1>
+- <change 2>
+- Tests: X passing"
+
+git push -u origin feature/<FEATURE_ID>
 ```
 
 Create PR using GitHub MCP:
-- Title: "feat: <description>"
-- Body: summary from review
+- Title: feat(<FEATURE_ID>): <description>
+- Body: paste the review summary
 - Base: develop
-- Head: feature/<branch-name>
+- Head: feature/<FEATURE_ID>
 
-Present:
-✅ FEATURE COMPLETE
-🌿 Branch: feature/<name>
+Then say:
+
+"✅ DONE
+
+🌿 Branch: feature/<FEATURE_ID>
 🔗 PR: <url>
 🧪 Tests: X/X passing
-📝 Review: docs/reviews/REVIEW.md
+📝 Plan: docs/plans/<FEATURE_ID>-plan.md
+📝 Review: docs/reviews/<FEATURE_ID>-review.md"

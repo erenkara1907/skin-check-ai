@@ -6,7 +6,7 @@ part of 'auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authRepositoryHash() => r'34dce5e020bd5d2fa8789b6f681e69108b041bf1';
+String _$authRepositoryHash() => r'f6e7342312b805bd44777819d0c1a4055e6c2871';
 
 /// Provides the [AuthRepository] instance.
 ///
@@ -25,7 +25,7 @@ final authRepositoryProvider = Provider<AuthRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthRepositoryRef = ProviderRef<AuthRepository>;
-String _$isAuthenticatedHash() => r'9a5eb2dac81391e8ee7998f4e35b8be841ab2dad';
+String _$isAuthenticatedHash() => r'5c7a3f80c080a2e4381dd3f9e772717e1bb7d064';
 
 /// Whether the user is currently authenticated.
 ///

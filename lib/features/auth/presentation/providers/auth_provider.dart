@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/utils/logger.dart';
@@ -12,7 +13,7 @@ part 'auth_provider.g.dart';
 
 /// Provides the [AuthRepository] instance.
 @Riverpod(keepAlive: true)
-AuthRepository authRepository(AuthRepositoryRef ref) {
+AuthRepository authRepository(Ref ref) {
   return AuthRepositoryImpl(
     SupabaseAuthDataSource(SupabaseService.client),
   );
@@ -84,7 +85,7 @@ class AuthNotifier extends _$AuthNotifier {
 
 /// Whether the user is currently authenticated.
 @riverpod
-bool isAuthenticated(IsAuthenticatedRef ref) {
+bool isAuthenticated(Ref ref) {
   final auth = ref.watch(authNotifierProvider);
   return auth.valueOrNull != null;
 }
