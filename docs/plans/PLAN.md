@@ -1,96 +1,98 @@
-# Plan: Project Scaffold & Core Layer
+# Plan: Supabase Database Schema & Auth Feature
 
-## 1. Files to Create/Modify
+## BÖLÜM A — Veritabanı (Supabase MCP)
 
-### Modified Files
-- `pubspec.yaml` — add all dependencies
-- `lib/main.dart` — ProviderScope + MaterialApp.router
+### 1. Enum Types
+- `skin_type_enum`: normal, oily, dry, combination
+- `zone_enum`: forehead, nose, cheek_left, cheek_right, chin, eye_area, lip_area
+- `routine_type_enum`: morning, evening
 
-### Core Layer (New Files)
-- `lib/core/theme/app_colors.dart`
-- `lib/core/theme/app_text_styles.dart`
-- `lib/core/theme/app_theme.dart`
-- `lib/core/router/app_router.dart`
-- `lib/core/services/supabase_service.dart`
-- `lib/core/constants/app_constants.dart`
-- `lib/core/utils/logger.dart`
+### 2. Tablolar
 
-### Shared Widgets (New Files)
-- `lib/shared/widgets/app_button.dart`
-- `lib/shared/widgets/app_card.dart`
-- `lib/shared/widgets/app_loading.dart`
-- `lib/shared/widgets/score_circle.dart`
-- `lib/shared/widgets/gradient_background.dart`
+| Tablo | Açıklama |
+|-------|----------|
+| `users` | id (uuid, FK → auth.users), email, name, skin_type, birth_date, subscription_tier, avatar_url, created_at, updated_at |
+| `analyses` | id, user_id (FK → users), photo_url, overall_score, skin_age, ai_response_json, created_at |
+| `zone_scores` | id, analysis_id (FK → analyses), zone (zone_enum), score, concerns (text[]), severity (int), recommendations (text[]) |
+| `routines` | id, user_id (FK → users), type (routine_type_enum), steps_json (jsonb), is_active, created_at, updated_at |
+| `products` | id, name, brand, description, image_url, affiliate_url, suitable_concerns (text[]), skin_types (skin_type_enum[]), rating, created_at |
+| `progress_logs` | id, user_id (FK → users), analysis_id (FK → analyses), score_delta, photo_url, notes, created_at |
+| `user_goals` | id, user_id (FK → users), goal_type, target_score, current_score, is_achieved, created_at, updated_at |
 
-### Feature Directories (Empty — placeholder .gitkeep)
-Each feature gets `domain/`, `data/`, `presentation/` subdirs:
-- `lib/features/auth/{domain,data,presentation}/`
-- `lib/features/onboarding/{domain,data,presentation}/`
-- `lib/features/analysis/{domain,data,presentation}/`
-- `lib/features/routine/{domain,data,presentation}/`
-- `lib/features/progress/{domain,data,presentation}/`
-- `lib/features/products/{domain,data,presentation}/`
-- `lib/features/sharing/{domain,data,presentation}/`
-- `lib/features/profile/{domain,data,presentation}/`
-- `lib/features/settings/{domain,data,presentation}/`
+### 3. Indexes
+- `analyses`: user_id, created_at DESC
+- `zone_scores`: analysis_id
+- `routines`: user_id, is_active
+- `progress_logs`: user_id, created_at DESC
+- `user_goals`: user_id, is_achieved
+- `products`: suitable_concerns (GIN)
 
-### Placeholder Screens (for GoRouter)
-- `lib/features/auth/presentation/screens/login_screen.dart`
-- `lib/features/onboarding/presentation/screens/onboarding_screen.dart`
-- `lib/features/analysis/presentation/screens/analysis_screen.dart`
-- `lib/features/routine/presentation/screens/routine_screen.dart`
-- `lib/features/progress/presentation/screens/progress_screen.dart`
-- `lib/features/products/presentation/screens/products_screen.dart`
-- `lib/features/sharing/presentation/screens/sharing_screen.dart`
-- `lib/features/profile/presentation/screens/profile_screen.dart`
-- `lib/features/settings/presentation/screens/settings_screen.dart`
-- `lib/shared/widgets/main_shell.dart` — Bottom nav shell
+### 4. RLS Policies
+- **users**: authenticated → own row only (SELECT, INSERT, UPDATE)
+- **analyses**: authenticated → own rows only (SELECT, INSERT)
+- **zone_scores**: authenticated → own analysis's rows (SELECT, INSERT)
+- **routines**: authenticated → own rows (SELECT, INSERT, UPDATE, DELETE)
+- **products**: authenticated → all rows (SELECT only)
+- **progress_logs**: authenticated → own rows (SELECT, INSERT)
+- **user_goals**: authenticated → own rows (SELECT, INSERT, UPDATE, DELETE)
 
-## 2. Domain Layer
-N/A for this scaffold task — no entities, repos, or use cases yet.
+### 5. Storage
+- Bucket: `skin-photos` (private)
+- Max file size: 5MB
+- Allowed MIME: `image/*`
+- RLS: users can upload/read only own folder (`{user_id}/*`)
 
-## 3. Data Layer
-N/A for this scaffold task — no DTOs or data sources yet.
+---
 
-## 4. Presentation Layer
-- Placeholder screens for each feature (minimal scaffold with GradientBackground)
-- MainShell with bottom navigation (5 tabs: Home, Analyze, Progress, Routine, Profile)
-- GoRouter with ShellRoute for bottom nav
+## BÖLÜM B — Auth Feature
 
-## 5. Database Changes
-None — Supabase service is init-only, no table creation in this task.
+### 1. Domain Layer
+| Dosya | İçerik |
+|-------|--------|
+| `lib/features/auth/domain/entities/user_entity.dart` | Freezed User entity (id, email, name, skinType, avatarUrl) |
+| `lib/features/auth/domain/repositories/auth_repository.dart` | Abstract AuthRepository interface |
 
-## 6. Dependencies (pubspec.yaml)
+### 2. Data Layer
+| Dosya | İçerik |
+|-------|--------|
+| `lib/features/auth/data/datasources/supabase_auth_datasource.dart` | Supabase auth ops (signIn, signUp, signInWithGoogle, signInWithApple, signOut, currentUser, authStateChanges) |
+| `lib/features/auth/data/repositories/auth_repository_impl.dart` | AuthRepository implementation |
 
-### dependencies:
-- flutter_riverpod, riverpod_annotation
-- go_router
-- supabase_flutter
-- camera, image_picker, google_mlkit_face_detection
-- dio
-- freezed_annotation, json_annotation
-- flutter_secure_storage
-- share_plus, fl_chart
-- cached_network_image, flutter_animate
-- logger, lucide_icons
-- permission_handler, url_launcher, path_provider
-- google_fonts
+### 3. Presentation Layer
+| Dosya | İçerik |
+|-------|--------|
+| `lib/features/auth/presentation/providers/auth_provider.dart` | Riverpod AsyncNotifier for auth state |
+| `lib/features/auth/presentation/screens/login_screen.dart` | Login screen (glassmorphism card, gradient bg, social login) |
+| `lib/features/auth/presentation/screens/sign_up_screen.dart` | Sign up screen (name, email, password) |
+| `lib/features/auth/presentation/widgets/auth_text_field.dart` | Styled text field with focus animation |
+| `lib/features/auth/presentation/widgets/social_login_button.dart` | Google/Apple login buttons |
 
-### dev_dependencies:
-- riverpod_generator, build_runner
-- freezed, json_serializable
-- riverpod_lint
-- mocktail
+### 4. Core Updates
+| Dosya | Değişiklik |
+|-------|------------|
+| `lib/core/router/app_router.dart` | Add redirect (unauthenticated → /login), add /sign-up route, convert to Riverpod provider |
+| `lib/main.dart` | Initialize Supabase before runApp |
 
-## 7. Test Cases
-- `test/core/theme/app_colors_test.dart` — color constants validation
-- `test/core/theme/app_theme_test.dart` — light/dark theme verification
-- `test/shared/widgets/app_button_test.dart` — button variants & states
-- `test/shared/widgets/app_card_test.dart` — card renders correctly
-- `test/shared/widgets/score_circle_test.dart` — score colors by range
-- `test/shared/widgets/gradient_background_test.dart` — renders child
+### 5. Tasarım
+- **Login Screen**: Glassmorphism card centered, diagonal gradient (#6C63FF → #00D9A6)
+- **Logo**: App name animated at top
+- **Social buttons**: Google (white bg) + Apple (black bg, iOS only) side by side
+- **Input fields**: Rounded borders, subtle border, focus animation
+- **Dark mode**: Darker gradient tones
 
-## 8. Security Concerns
-- Supabase URL/anon key loaded from env (not hardcoded)
-- No API keys in source code
-- flutter_secure_storage for sensitive data
+---
+
+## Test Plan
+| Test | Tip |
+|------|-----|
+| `auth_repository_impl_test.dart` | Unit — sign in, sign up, sign out, error handling |
+| `auth_provider_test.dart` | Unit — state transitions |
+| `login_screen_test.dart` | Widget — renders fields, buttons, navigation |
+| `sign_up_screen_test.dart` | Widget — renders fields, validates input |
+
+## Security
+- No API keys in client code
+- RLS enforced on all tables
+- Photos in private bucket with signed URLs
+- Auth tokens managed by Supabase SDK
+- Input validation on all forms
