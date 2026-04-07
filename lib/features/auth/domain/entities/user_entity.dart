@@ -14,6 +14,8 @@ class UserEntity with _$UserEntity {
     String? avatarUrl,
     DateTime? birthDate,
     @Default('free') String subscriptionTier,
+    @Default(false) bool onboardingCompleted,
+    @Default([]) List<String> skinConcerns,
   }) = _UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>

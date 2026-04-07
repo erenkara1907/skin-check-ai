@@ -93,6 +93,32 @@ class SupabaseAuthDataSource {
     await _client.auth.signOut();
   }
 
+  /// Fetches full user profile from public.users table.
+  Future<UserEntity> fetchUserProfile(String userId) async {
+    final data = await _client
+        .from('users')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
+
+    if (data == null) {
+      return UserEntity(id: userId, email: '');
+    }
+
+    return UserEntity(
+      id: data['id'] as String,
+      email: data['email'] as String? ?? '',
+      name: data['name'] as String?,
+      skinType: data['skin_type'] as String?,
+      avatarUrl: data['avatar_url'] as String?,
+      subscriptionTier: data['subscription_tier'] as String? ?? 'free',
+      onboardingCompleted: data['onboarding_completed'] as bool? ?? false,
+      skinConcerns: (data['skin_concerns'] as List<dynamic>?)
+              ?.cast<String>() ??
+          const [],
+    );
+  }
+
   UserEntity _mapUser(User user) {
     return UserEntity(
       id: user.id,

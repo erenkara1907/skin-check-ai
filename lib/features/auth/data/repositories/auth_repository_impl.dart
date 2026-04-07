@@ -87,4 +87,14 @@ class AuthRepositoryImpl implements AuthRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<UserEntity> fetchUserProfile(String userId) async {
+    try {
+      return await _dataSource.fetchUserProfile(userId);
+    } catch (e, st) {
+      log.e('Fetch user profile failed', e, st);
+      rethrow;
+    }
+  }
 }

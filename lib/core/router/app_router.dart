@@ -29,18 +29,33 @@ abstract final class AppRoutes {
   static const sharing = '/sharing';
 }
 
-/// Application router provider with auth redirect.
+/// Application router provider with auth + onboarding redirect.
 final appRouterProvider = Provider<GoRouter>((ref) {
   final isAuth = ref.watch(isAuthenticatedProvider);
+  final onboardingDone = ref.watch(isOnboardingCompletedProvider);
 
   return GoRouter(
     initialLocation: AppRoutes.home,
     redirect: (context, state) {
-      final onAuthPage = state.matchedLocation == AppRoutes.login ||
-          state.matchedLocation == AppRoutes.signUp;
+      final loc = state.matchedLocation;
+      final onAuthPage =
+          loc == AppRoutes.login || loc == AppRoutes.signUp;
+      final onOnboarding = loc == AppRoutes.onboarding;
 
+      // Not authenticated → login (unless already on auth page)
       if (!isAuth && !onAuthPage) return AppRoutes.login;
-      if (isAuth && onAuthPage) return AppRoutes.home;
+      // Authenticated on auth page → check onboarding
+      if (isAuth && onAuthPage) {
+        return onboardingDone ? AppRoutes.home : AppRoutes.onboarding;
+      }
+      // Authenticated but onboarding not done → onboarding
+      if (isAuth && !onboardingDone && !onOnboarding) {
+        return AppRoutes.onboarding;
+      }
+      // Onboarding done but still on onboarding page → home
+      if (isAuth && onboardingDone && onOnboarding) {
+        return AppRoutes.home;
+      }
       return null;
     },
     routes: [

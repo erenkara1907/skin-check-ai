@@ -89,3 +89,37 @@ bool isAuthenticated(Ref ref) {
   final auth = ref.watch(authNotifierProvider);
   return auth.valueOrNull != null;
 }
+
+/// Fetches the full user profile from the database.
+@Riverpod(keepAlive: true)
+class UserProfile extends _$UserProfile {
+  @override
+  FutureOr<UserEntity?> build() async {
+    final auth = ref.watch(authNotifierProvider);
+    final user = auth.valueOrNull;
+    if (user == null) return null;
+
+    final repo = ref.read(authRepositoryProvider);
+    return repo.fetchUserProfile(user.id);
+  }
+
+  /// Refreshes the user profile from the database.
+  Future<void> refresh() async {
+    final auth = ref.read(authNotifierProvider);
+    final user = auth.valueOrNull;
+    if (user == null) return;
+
+    state = const AsyncLoading();
+    final repo = ref.read(authRepositoryProvider);
+    state = await AsyncValue.guard(
+      () => repo.fetchUserProfile(user.id),
+    );
+  }
+}
+
+/// Whether the user has completed onboarding.
+@riverpod
+bool isOnboardingCompleted(Ref ref) {
+  final profile = ref.watch(userProfileProvider);
+  return profile.valueOrNull?.onboardingCompleted ?? false;
+}

@@ -29,4 +29,7 @@ abstract class AuthRepository {
 
   /// Sign out the current user.
   Future<void> signOut();
+
+  /// Fetches full user profile from database.
+  Future<UserEntity> fetchUserProfile(String userId);
 }

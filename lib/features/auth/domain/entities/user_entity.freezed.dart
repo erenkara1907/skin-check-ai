@@ -28,6 +28,8 @@ mixin _$UserEntity {
   String? get avatarUrl => throw _privateConstructorUsedError;
   DateTime? get birthDate => throw _privateConstructorUsedError;
   String get subscriptionTier => throw _privateConstructorUsedError;
+  bool get onboardingCompleted => throw _privateConstructorUsedError;
+  List<String> get skinConcerns => throw _privateConstructorUsedError;
 
   /// Serializes this UserEntity to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,6 +56,8 @@ abstract class $UserEntityCopyWith<$Res> {
     String? avatarUrl,
     DateTime? birthDate,
     String subscriptionTier,
+    bool onboardingCompleted,
+    List<String> skinConcerns,
   });
 }
 
@@ -79,6 +83,8 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
     Object? avatarUrl = freezed,
     Object? birthDate = freezed,
     Object? subscriptionTier = null,
+    Object? onboardingCompleted = null,
+    Object? skinConcerns = null,
   }) {
     return _then(
       _value.copyWith(
@@ -110,6 +116,14 @@ class _$UserEntityCopyWithImpl<$Res, $Val extends UserEntity>
                 ? _value.subscriptionTier
                 : subscriptionTier // ignore: cast_nullable_to_non_nullable
                       as String,
+            onboardingCompleted: null == onboardingCompleted
+                ? _value.onboardingCompleted
+                : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            skinConcerns: null == skinConcerns
+                ? _value.skinConcerns
+                : skinConcerns // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -133,6 +147,8 @@ abstract class _$$UserEntityImplCopyWith<$Res>
     String? avatarUrl,
     DateTime? birthDate,
     String subscriptionTier,
+    bool onboardingCompleted,
+    List<String> skinConcerns,
   });
 }
 
@@ -157,6 +173,8 @@ class __$$UserEntityImplCopyWithImpl<$Res>
     Object? avatarUrl = freezed,
     Object? birthDate = freezed,
     Object? subscriptionTier = null,
+    Object? onboardingCompleted = null,
+    Object? skinConcerns = null,
   }) {
     return _then(
       _$UserEntityImpl(
@@ -188,6 +206,14 @@ class __$$UserEntityImplCopyWithImpl<$Res>
             ? _value.subscriptionTier
             : subscriptionTier // ignore: cast_nullable_to_non_nullable
                   as String,
+        onboardingCompleted: null == onboardingCompleted
+            ? _value.onboardingCompleted
+            : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        skinConcerns: null == skinConcerns
+            ? _value._skinConcerns
+            : skinConcerns // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -204,7 +230,9 @@ class _$UserEntityImpl implements _UserEntity {
     this.avatarUrl,
     this.birthDate,
     this.subscriptionTier = 'free',
-  });
+    this.onboardingCompleted = false,
+    final List<String> skinConcerns = const [],
+  }) : _skinConcerns = skinConcerns;
 
   factory _$UserEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserEntityImplFromJson(json);
@@ -224,10 +252,21 @@ class _$UserEntityImpl implements _UserEntity {
   @override
   @JsonKey()
   final String subscriptionTier;
+  @override
+  @JsonKey()
+  final bool onboardingCompleted;
+  final List<String> _skinConcerns;
+  @override
+  @JsonKey()
+  List<String> get skinConcerns {
+    if (_skinConcerns is EqualUnmodifiableListView) return _skinConcerns;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_skinConcerns);
+  }
 
   @override
   String toString() {
-    return 'UserEntity(id: $id, email: $email, name: $name, skinType: $skinType, avatarUrl: $avatarUrl, birthDate: $birthDate, subscriptionTier: $subscriptionTier)';
+    return 'UserEntity(id: $id, email: $email, name: $name, skinType: $skinType, avatarUrl: $avatarUrl, birthDate: $birthDate, subscriptionTier: $subscriptionTier, onboardingCompleted: $onboardingCompleted, skinConcerns: $skinConcerns)';
   }
 
   @override
@@ -245,7 +284,13 @@ class _$UserEntityImpl implements _UserEntity {
             (identical(other.birthDate, birthDate) ||
                 other.birthDate == birthDate) &&
             (identical(other.subscriptionTier, subscriptionTier) ||
-                other.subscriptionTier == subscriptionTier));
+                other.subscriptionTier == subscriptionTier) &&
+            (identical(other.onboardingCompleted, onboardingCompleted) ||
+                other.onboardingCompleted == onboardingCompleted) &&
+            const DeepCollectionEquality().equals(
+              other._skinConcerns,
+              _skinConcerns,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -259,6 +304,8 @@ class _$UserEntityImpl implements _UserEntity {
     avatarUrl,
     birthDate,
     subscriptionTier,
+    onboardingCompleted,
+    const DeepCollectionEquality().hash(_skinConcerns),
   );
 
   /// Create a copy of UserEntity
@@ -284,6 +331,8 @@ abstract class _UserEntity implements UserEntity {
     final String? avatarUrl,
     final DateTime? birthDate,
     final String subscriptionTier,
+    final bool onboardingCompleted,
+    final List<String> skinConcerns,
   }) = _$UserEntityImpl;
 
   factory _UserEntity.fromJson(Map<String, dynamic> json) =
@@ -303,6 +352,10 @@ abstract class _UserEntity implements UserEntity {
   DateTime? get birthDate;
   @override
   String get subscriptionTier;
+  @override
+  bool get onboardingCompleted;
+  @override
+  List<String> get skinConcerns;
 
   /// Create a copy of UserEntity
   /// with the given fields replaced by the non-null parameter values.
