@@ -17,6 +17,12 @@ _$UserEntityImpl _$$UserEntityImplFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['birthDate'] as String),
       subscriptionTier: json['subscriptionTier'] as String? ?? 'free',
+      onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
+      skinConcerns:
+          (json['skinConcerns'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$UserEntityImplToJson(_$UserEntityImpl instance) =>
@@ -28,4 +34,6 @@ Map<String, dynamic> _$$UserEntityImplToJson(_$UserEntityImpl instance) =>
       'avatarUrl': instance.avatarUrl,
       'birthDate': instance.birthDate?.toIso8601String(),
       'subscriptionTier': instance.subscriptionTier,
+      'onboardingCompleted': instance.onboardingCompleted,
+      'skinConcerns': instance.skinConcerns,
     };
