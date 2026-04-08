@@ -50,6 +50,10 @@ dependencies:
   # Payments
   purchases_flutter: ^8.9.0
 
+  # Local storage
+  shared_preferences: ^2.3.4
+  package_info_plus: ^8.1.3
+
   # Utils
   logger: ^2.5.0
   share_plus: ^10.1.4
