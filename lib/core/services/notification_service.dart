@@ -20,6 +20,7 @@ class NotificationService {
   final _plugin = FlutterLocalNotificationsPlugin();
   static const _morningId = 100;
   static const _eveningId = 101;
+  static const _weeklyAnalysisId = 200;
 
   /// Initializes the notification plugin and timezone data.
   Future<void> initialize({
@@ -89,6 +90,18 @@ class NotificationService {
     log.i('Daily reminders scheduled: 07:00 & 21:00');
   }
 
+  /// Schedules a weekly analysis reminder (Monday 10:00).
+  Future<void> scheduleWeeklyAnalysisReminder() async {
+    await _scheduleWeekly(
+      id: _weeklyAnalysisId,
+      weekday: DateTime.monday,
+      hour: 10,
+      title: 'Bu hafta analizini yaptin mi?',
+      body: 'Haftalik analizini yap ve ilerlemeyi takip et!',
+    );
+    log.i('Weekly analysis reminder scheduled: Monday 10:00');
+  }
+
   /// Cancels all scheduled reminders.
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
@@ -138,6 +151,54 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: 'routine',
+    );
+  }
+
+  Future<void> _scheduleWeekly({
+    required int id,
+    required int weekday,
+    required int hour,
+    required String title,
+    required String body,
+  }) async {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+    );
+    // Advance to the target weekday
+    while (scheduled.weekday != weekday || scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      'weekly_analysis',
+      'Haftalik Analiz Hatirlatmasi',
+      channelDescription: 'Haftalik cilt analizi hatirlatmasi',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduled,
+      const NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      payload: 'weekly_analysis',
     );
   }
 }
