@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/gradient_background.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../sharing/domain/entities/share_card_data.dart';
+import '../../../sharing/presentation/providers/share_card_provider.dart';
+import '../../../sharing/presentation/widgets/share_card.dart';
+import '../../../sharing/presentation/widgets/share_options_sheet.dart';
 import '../providers/progress_provider.dart';
 import '../widgets/metric_cards_row.dart';
 import '../widgets/most_improved_badge.dart';
@@ -32,13 +38,31 @@ class ProgressScreen extends ConsumerWidget {
   }
 }
 
-class _ProgressBody extends ConsumerWidget {
+class _ProgressBody extends ConsumerStatefulWidget {
   const _ProgressBody({required this.userId});
 
   final String userId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProgressBody> createState() => _ProgressBodyState();
+}
+
+class _ProgressBodyState extends ConsumerState<_ProgressBody> {
+  final _shareCardKey = GlobalKey();
+
+  Future<void> _onShare(double score, int skinAge) async {
+    final destination = await ShareOptionsSheet.show(context);
+    if (destination == null || !mounted) return;
+
+    await ref.read(shareCardNotifierProvider.notifier).captureAndShare(
+          _shareCardKey,
+          destination,
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userId = widget.userId;
     final summaryAsync =
         ref.watch(progressSummaryNotifierProvider(userId));
 
@@ -61,66 +85,112 @@ class _ProgressBody extends ConsumerWidget {
         final photosAsync =
             ref.watch(photoComparisonNotifierProvider(userId));
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(
-              progressSummaryNotifierProvider(userId),
-            );
-            ref.invalidate(scoreTrendNotifierProvider(userId));
-            ref.invalidate(zoneProgressNotifierProvider(userId));
-            ref.invalidate(
-              photoComparisonNotifierProvider(userId),
-            );
-          },
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                'Ilerleme',
-                style: AppTextStyles.displaySmall,
-              ),
-              const SizedBox(height: 16),
-              MetricCardsRow(summary: summary),
-              const SizedBox(height: 16),
-              // Score trend chart
-              trendAsync.when(
-                loading: () => const SizedBox(
-                  height: 240,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+        final shareData = ShareCardData(
+          overallScore: summary.currentScore,
+          skinAge: summary.skinAge,
+          label: 'Haftalık İlerleme',
+        );
+
+        return Stack(
+          children: [
+            // Off-screen share card for capture
+            Positioned(
+              left: -1200,
+              child: SizedBox(
+                width: 1080,
+                height: 1920,
+                child: ShareCard(
+                  data: shareData,
+                  repaintKey: _shareCardKey,
                 ),
-                error: (_, __) => const SizedBox.shrink(),
-                data: (trend) => ScoreTrendChart(data: trend),
               ),
-              const SizedBox(height: 12),
-              // Most improved badge
-              if (summary.mostImprovedZone != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: MostImprovedBadge(
-                    zoneName: summary.mostImprovedZone!,
-                    changePercent:
-                        summary.mostImprovedZoneChange,
+            ),
+            RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(
+                  progressSummaryNotifierProvider(userId),
+                );
+                ref.invalidate(
+                  scoreTrendNotifierProvider(userId),
+                );
+                ref.invalidate(
+                  zoneProgressNotifierProvider(userId),
+                );
+                ref.invalidate(
+                  photoComparisonNotifierProvider(userId),
+                );
+              },
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Ilerleme',
+                        style: AppTextStyles.displaySmall,
+                      ),
+                      AppButton(
+                        label: 'Paylaş',
+                        onPressed: () => _onShare(
+                          summary.currentScore,
+                          summary.skinAge,
+                        ),
+                        variant: AppButtonVariant.outline,
+                        icon: LucideIcons.share2,
+                        fullWidth: false,
+                      ),
+                    ],
                   ),
-                ),
-              // Photo comparison
-              photosAsync.when(
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-                data: (photos) =>
-                    PhotoComparisonSlider(comparison: photos),
+                  const SizedBox(height: 16),
+                  MetricCardsRow(summary: summary),
+                  const SizedBox(height: 16),
+                  // Score trend chart
+                  trendAsync.when(
+                    loading: () => const SizedBox(
+                      height: 240,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (trend) =>
+                        ScoreTrendChart(data: trend),
+                  ),
+                  const SizedBox(height: 12),
+                  // Most improved badge
+                  if (summary.mostImprovedZone != null)
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(bottom: 16),
+                      child: MostImprovedBadge(
+                        zoneName: summary.mostImprovedZone!,
+                        changePercent:
+                            summary.mostImprovedZoneChange,
+                      ),
+                    ),
+                  // Photo comparison
+                  photosAsync.when(
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (photos) => PhotoComparisonSlider(
+                      comparison: photos,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Zone progress
+                  zonesAsync.when(
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (zones) =>
+                        ZoneProgressList(zones: zones),
+                  ),
+                  const SizedBox(height: 32),
+                ],
               ),
-              const SizedBox(height: 16),
-              // Zone progress
-              zonesAsync.when(
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-                data: (zones) => ZoneProgressList(zones: zones),
-              ),
-              const SizedBox(height: 32),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
