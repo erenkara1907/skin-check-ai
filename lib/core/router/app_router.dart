@@ -13,7 +13,6 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/routine/presentation/screens/routine_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../features/sharing/presentation/screens/sharing_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
 /// Route path constants.
@@ -28,7 +27,6 @@ abstract final class AppRoutes {
   static const profile = '/profile';
   static const settings = '/settings';
   static const products = '/products';
-  static const sharing = '/sharing';
 }
 
 /// Application router provider with auth + onboarding redirect.
@@ -166,10 +164,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               : concernsParam.split(',');
           return ProductsScreen(concerns: concerns);
         },
-      ),
-      GoRoute(
-        path: AppRoutes.sharing,
-        builder: (context, state) => const SharingScreen(),
       ),
     ],
   );
