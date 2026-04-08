@@ -158,7 +158,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Standalone routes
       GoRoute(
         path: AppRoutes.products,
-        builder: (context, state) => const ProductsScreen(),
+        builder: (context, state) {
+          final concernsParam =
+              state.uri.queryParameters['concerns'] ?? '';
+          final concerns = concernsParam.isEmpty
+              ? <String>[]
+              : concernsParam.split(',');
+          return ProductsScreen(concerns: concerns);
+        },
       ),
       GoRoute(
         path: AppRoutes.sharing,
