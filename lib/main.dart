@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/config/env_config.dart';
+import 'core/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/services/revenuecat_service.dart';
 import 'core/services/supabase_service.dart';
@@ -32,13 +33,14 @@ class SkinCheckApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeNotifierProvider);
 
     return MaterialApp.router(
       title: 'SkinCheck AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }
