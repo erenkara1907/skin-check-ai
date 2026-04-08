@@ -15,6 +15,7 @@ import '../../../sharing/presentation/widgets/share_card.dart';
 import '../../../sharing/presentation/widgets/share_options_sheet.dart';
 import '../../domain/entities/analysis_entity.dart';
 import '../providers/analysis_provider.dart';
+import '../../../../shared/widgets/paywall_gate.dart';
 import '../widgets/analysis_error_view.dart';
 import '../widgets/analysis_loading.dart';
 import '../widgets/recommended_products_section.dart';
@@ -100,10 +101,7 @@ class _ResultContentState extends ConsumerState<_ResultContent> {
         ),
         // Visible content
         ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           children: [
             // Back button
             Align(
@@ -144,29 +142,32 @@ class _ResultContentState extends ConsumerState<_ResultContent> {
                 ),
             const SizedBox(height: 16),
 
-            // Skin age
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.glassDark
-                      : AppColors.glassLight,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isDark
-                        ? AppColors.glassBorderDark
-                        : AppColors.glassBorderLight,
+            // Skin age (Pro only)
+            PaywallGate(
+              label: 'Cilt Yasi',
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
                   ),
-                ),
-                child: Text(
-                  'Cilt Yaşın: ${analysis.skinAge}',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.glassDark
+                        : AppColors.glassLight,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.glassBorderDark
+                          : AppColors.glassBorderLight,
+                    ),
+                  ),
+                  child: Text(
+                    'Cilt Yaşın: ${analysis.skinAge}',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -199,8 +200,11 @@ class _ResultContentState extends ConsumerState<_ResultContent> {
               ).animate().fadeIn(delay: 500.ms, duration: 400.ms),
             const SizedBox(height: 32),
 
-            // Interactive face zone map
-            ResultZoneSection(zones: analysis.zones),
+            // Interactive face zone map (Pro only)
+            PaywallGate(
+              label: 'Bolge Haritasi',
+              child: ResultZoneSection(zones: analysis.zones),
+            ),
             const SizedBox(height: 32),
 
             // Action buttons
@@ -244,4 +248,3 @@ class _ResultContentState extends ConsumerState<_ResultContent> {
     );
   }
 }
-

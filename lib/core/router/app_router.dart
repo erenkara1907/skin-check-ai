@@ -13,6 +13,7 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/routine/presentation/screens/routine_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
 /// Route path constants.
@@ -27,6 +28,7 @@ abstract final class AppRoutes {
   static const profile = '/profile';
   static const settings = '/settings';
   static const products = '/products';
+  static const paywall = '/paywall';
 }
 
 /// Application router provider with auth + onboarding redirect.
@@ -154,6 +156,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // Standalone routes
+      GoRoute(
+        path: AppRoutes.paywall,
+        builder: (context, state) => const PaywallScreen(),
+      ),
       GoRoute(
         path: AppRoutes.products,
         builder: (context, state) {
