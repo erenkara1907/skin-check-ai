@@ -47,6 +47,9 @@ dependencies:
   flutter_local_notifications: ^19.0.0
   timezone: ^0.10.0
 
+  # Payments
+  purchases_flutter: ^8.9.0
+
   # Utils
   logger: ^2.5.0
   share_plus: ^10.1.4

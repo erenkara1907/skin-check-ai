@@ -23,4 +23,12 @@ abstract final class EnvConfig {
 
   static String get googleWebClientId =>
       dotenv.get('GOOGLE_WEB_CLIENT_ID');
+
+  // ── RevenueCat ─────────────────────────────
+
+  static String get revenueCatApiKeyIos =>
+      dotenv.get('REVENUECAT_API_KEY_IOS');
+
+  static String get revenueCatApiKeyAndroid =>
+      dotenv.get('REVENUECAT_API_KEY_ANDROID');
 }

@@ -16,4 +16,12 @@ abstract final class AppConstants {
   static const maxFileNameLength = 100;
   static const scoreMin = 0.0;
   static const scoreMax = 100.0;
+
+  // Subscription
+  static const freeWeeklyAnalysisLimit = 1;
+  static const proEntitlementId = 'pro';
+  static const monthlyPlanId = 'skincheck_pro_monthly';
+  static const yearlyPlanId = 'skincheck_pro_yearly';
+  static const monthlyPrice = '\$5.99';
+  static const yearlyPrice = '\$49.99';
 }

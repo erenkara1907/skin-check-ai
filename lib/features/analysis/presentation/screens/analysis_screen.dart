@@ -9,10 +9,21 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/gradient_background.dart';
+import '../../../subscription/presentation/providers/subscription_provider.dart';
 
 /// Home / analysis hub screen — start a new analysis or view history.
 class AnalysisScreen extends ConsumerWidget {
   const AnalysisScreen({super.key});
+
+  void _onStartAnalysis(BuildContext context, WidgetRef ref) async {
+    final canAnalyze = await ref.read(canAnalyzeProvider.future);
+    if (!context.mounted) return;
+    if (canAnalyze) {
+      context.go('${AppRoutes.analyze}/camera');
+    } else {
+      context.push(AppRoutes.paywall);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -122,8 +133,7 @@ class AnalysisScreen extends ConsumerWidget {
                         const SizedBox(height: 24),
                         AppButton(
                           label: 'Kamerayı Aç',
-                          onPressed: () =>
-                              context.go('${AppRoutes.analyze}/camera'),
+                          onPressed: () => _onStartAnalysis(context, ref),
                           variant: AppButtonVariant.primary,
                           icon: LucideIcons.camera,
                           fullWidth: true,
