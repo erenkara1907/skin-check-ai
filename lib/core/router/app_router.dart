@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/analysis/presentation/screens/analysis_result_screen.dart';
 import '../../features/analysis/presentation/screens/analysis_screen.dart';
+import '../../features/analysis/presentation/screens/camera_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
@@ -82,6 +84,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: AnalysisScreen(),
                 ),
+                routes: [
+                  GoRoute(
+                    path: 'camera',
+                    builder: (context, state) => const CameraScreen(),
+                  ),
+                  GoRoute(
+                    path: 'result',
+                    builder: (context, state) =>
+                        const AnalysisResultScreen(),
+                  ),
+                ],
               ),
             ],
           ),
