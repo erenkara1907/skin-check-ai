@@ -14,6 +14,7 @@ import '../providers/analysis_provider.dart';
 import '../widgets/analysis_error_view.dart';
 import '../widgets/analysis_loading.dart';
 import '../widgets/face_zone_map.dart';
+import '../widgets/recommended_products_section.dart';
 import '../widgets/zone_detail_sheet.dart';
 
 /// Displays analysis results with animated score reveal.
@@ -204,6 +205,15 @@ class _ResultContent extends StatelessWidget {
             .animate()
             .fadeIn(delay: 1000.ms, duration: 400.ms)
             .slideY(begin: 0.3, end: 0),
+        const SizedBox(height: 32),
+
+        // Recommended products based on analysis concerns
+        RecommendedProductsSection(
+          concerns: analysis.zones
+              .expand((z) => z.concerns)
+              .toSet()
+              .toList(),
+        ),
         const SizedBox(height: 24),
       ],
     );
