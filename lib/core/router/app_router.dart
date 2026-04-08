@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/analysis/presentation/screens/analysis_result_screen.dart';
 import '../../features/analysis/presentation/screens/analysis_screen.dart';
 import '../../features/analysis/presentation/screens/camera_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
@@ -87,7 +88,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.home,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: AnalysisScreen(), // Home = analysis overview
+                  child: HomeScreen(),
                 ),
               ),
             ],
