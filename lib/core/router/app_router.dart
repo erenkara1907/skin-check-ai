@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,6 +9,7 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
+import '../../features/landing/presentation/screens/landing_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/products/presentation/screens/products_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
@@ -20,6 +22,7 @@ import '../../shared/widgets/main_shell.dart';
 
 /// Route path constants.
 abstract final class AppRoutes {
+  static const landing = '/landing';
   static const login = '/login';
   static const signUp = '/sign-up';
   static const onboarding = '/onboarding';
@@ -45,8 +48,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final onAuthPage =
           loc == AppRoutes.login || loc == AppRoutes.signUp;
       final onOnboarding = loc == AppRoutes.onboarding;
+      final onLanding = loc == AppRoutes.landing;
 
-      // Not authenticated → login (unless already on auth page)
+      // Landing page is always accessible (web only)
+      if (onLanding) return null;
+
+      // Not authenticated on web → landing page
+      if (kIsWeb && !isAuth && !onAuthPage) return AppRoutes.landing;
+      // Not authenticated on mobile → login
       if (!isAuth && !onAuthPage) return AppRoutes.login;
       // Authenticated on auth page → check onboarding
       if (isAuth && onAuthPage) {
@@ -63,6 +72,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // Landing (web only)
+      GoRoute(
+        path: AppRoutes.landing,
+        builder: (context, state) => const LandingScreen(),
+      ),
+
       // Auth (outside shell)
       GoRoute(
         path: AppRoutes.login,
