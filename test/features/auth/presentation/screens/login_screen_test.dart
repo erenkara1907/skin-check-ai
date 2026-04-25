@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skincheck_ai/features/auth/domain/entities/user_entity.dart';
 import 'package:skincheck_ai/features/auth/presentation/providers/auth_provider.dart';
@@ -9,14 +8,14 @@ import 'package:skincheck_ai/features/auth/presentation/screens/login_screen.dar
 import 'package:skincheck_ai/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:skincheck_ai/features/auth/presentation/widgets/social_login_button.dart';
 
+import '../../../../helpers/test_app.dart';
+
 Widget _buildTestApp() {
-  return ProviderScope(
+  return pumpableTestApp(
+    const LoginScreen(),
     overrides: [
       authNotifierProvider.overrideWith(() => _FakeAuthNotifier()),
     ],
-    child: const MaterialApp(
-      home: LoginScreen(),
-    ),
   );
 }
 
@@ -46,7 +45,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SocialLoginButton), findsWidgets);
-      expect(find.text('Google ile Giriş'), findsOneWidget);
+      expect(find.text('Google'), findsOneWidget);
     });
 
     testWidgets('renders sign up link', (tester) async {

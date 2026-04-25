@@ -3,13 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:skincheck_ai/features/sharing/presentation/widgets/share_options_sheet.dart';
 
+import '../../../../helpers/test_app.dart';
+
 void main() {
   group('ShareOptionsSheet', () {
     Widget buildApp({required ValueChanged<ShareDestination> onSelected}) {
-      return MaterialApp(
-        home: Scaffold(
-          body: ShareOptionsSheet(onSelected: onSelected),
-        ),
+      return pumpableTestApp(
+        Scaffold(body: ShareOptionsSheet(onSelected: onSelected)),
       );
     }
 
@@ -20,7 +20,7 @@ void main() {
 
       expect(find.text('Instagram'), findsOneWidget);
       expect(find.text('WhatsApp'), findsOneWidget);
-      expect(find.text('Diger'), findsOneWidget);
+      expect(find.text('Diğer'), findsOneWidget);
     });
 
     testWidgets('renders title', (tester) async {
@@ -28,7 +28,7 @@ void main() {
         buildApp(onSelected: (_) {}),
       );
 
-      expect(find.text('Paylas'), findsOneWidget);
+      expect(find.text('Paylaş'), findsOneWidget);
     });
 
     testWidgets('tapping Instagram calls onSelected', (tester) async {
@@ -51,13 +51,13 @@ void main() {
       expect(selected, ShareDestination.whatsapp);
     });
 
-    testWidgets('tapping Diger calls onSelected', (tester) async {
+    testWidgets('tapping Diğer calls onSelected', (tester) async {
       ShareDestination? selected;
       await tester.pumpWidget(
         buildApp(onSelected: (d) => selected = d),
       );
 
-      await tester.tap(find.text('Diger'));
+      await tester.tap(find.text('Diğer'));
       expect(selected, ShareDestination.other);
     });
   });

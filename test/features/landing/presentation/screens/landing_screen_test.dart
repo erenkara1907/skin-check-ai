@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:skincheck_ai/features/landing/presentation/screens/landing_screen.dart';
 import 'package:skincheck_ai/features/landing/presentation/widgets/landing_hero_section.dart';
 
+import '../../../../helpers/test_app.dart';
+
 Widget _buildSubject() {
-  return const MaterialApp(
-    home: LandingScreen(),
-  );
+  return pumpableTestApp(const LandingScreen());
 }
 
 void main() {

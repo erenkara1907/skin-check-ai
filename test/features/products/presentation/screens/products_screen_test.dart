@@ -5,6 +5,8 @@ import 'package:skincheck_ai/features/products/domain/entities/product_entity.da
 import 'package:skincheck_ai/features/products/presentation/providers/product_provider.dart';
 import 'package:skincheck_ai/features/products/presentation/screens/products_screen.dart';
 
+import '../../../../helpers/test_app.dart';
+
 void main() {
   final testGrouped = {
     ProductCategory.temizleyici: [
@@ -41,26 +43,20 @@ void main() {
     required AsyncValue<Map<ProductCategory, List<ProductEntity>>> value,
     List<String> concerns = const [],
   }) {
-    return ProviderScope(
+    return pumpableTestApp(
+      ProductsScreen(concerns: concerns),
       overrides: [
         allProductsProvider.overrideWith((_) => value.requireValue),
         recommendedProductsProvider(concerns)
             .overrideWith((_) => value.requireValue),
       ],
-      child: MaterialApp(
-        home: ProductsScreen(concerns: concerns),
-      ),
     );
   }
 
   group('ProductsScreen', () {
     testWidgets('shows loading state', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            home: const ProductsScreen(),
-          ),
-        ),
+        pumpableTestApp(const ProductsScreen()),
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
