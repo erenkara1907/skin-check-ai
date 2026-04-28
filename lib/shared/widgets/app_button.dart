@@ -67,10 +67,10 @@ class _AppButtonState extends State<AppButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _enabled ? (_) => _controller.forward() : null,
-      onTapUp: _enabled ? (_) => _controller.reverse() : null,
-      onTapCancel: _enabled ? () => _controller.reverse() : null,
+    return Listener(
+      onPointerDown: _enabled ? (_) => _controller.forward() : null,
+      onPointerUp: _enabled ? (_) => _controller.reverse() : null,
+      onPointerCancel: _enabled ? (_) => _controller.reverse() : null,
       child: ScaleTransition(
         scale: _scale,
         child: SizedBox(
@@ -125,14 +125,26 @@ class _AppButtonState extends State<AppButton>
         children: [
           Icon(widget.icon, size: 20),
           const SizedBox(width: 8),
-          Text(widget.label, style: AppTextStyles.labelLarge.copyWith(
-            fontWeight: FontWeight.w700,
-          )),
+          Flexible(
+            child: Text(
+              widget.label,
+              style: AppTextStyles.labelLarge.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
         ],
       );
     }
-    return Text(widget.label, style: AppTextStyles.labelLarge.copyWith(
-      fontWeight: FontWeight.w700,
-    ));
+    return Text(
+      widget.label,
+      style: AppTextStyles.labelLarge.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+    );
   }
 }

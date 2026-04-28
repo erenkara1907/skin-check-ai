@@ -19,16 +19,16 @@ abstract final class EnvConfig {
   // ── Google Sign-In ─────────────────────────
 
   static String get googleClientIdIos =>
-      dotenv.get('GOOGLE_CLIENT_ID_IOS');
+      dotenv.get('GOOGLE_CLIENT_ID_IOS', fallback: '');
 
   static String get googleWebClientId =>
-      dotenv.get('GOOGLE_WEB_CLIENT_ID');
+      dotenv.get('GOOGLE_WEB_CLIENT_ID', fallback: '');
 
   // ── RevenueCat ─────────────────────────────
 
   static String get revenueCatApiKeyIos =>
-      dotenv.get('REVENUECAT_API_KEY_IOS');
+      dotenv.get('REVENUECAT_API_KEY_IOS', fallback: '');
 
   static String get revenueCatApiKeyAndroid =>
-      dotenv.get('REVENUECAT_API_KEY_ANDROID');
+      dotenv.get('REVENUECAT_API_KEY_ANDROID', fallback: '');
 }

@@ -52,10 +52,13 @@ abstract final class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
+        titleSpacing: 0,
+        leadingWidth: 56,
         titleTextStyle: AppTextStyles.headlineSmall.copyWith(
           color: textPrimary,
         ),
-        iconTheme: IconThemeData(color: textPrimary),
+        iconTheme: IconThemeData(color: textPrimary, size: 24),
+        actionsIconTheme: IconThemeData(color: textPrimary, size: 22),
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light
             : SystemUiOverlayStyle.dark,

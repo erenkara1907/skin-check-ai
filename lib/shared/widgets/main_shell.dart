@@ -1,39 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../core/extensions/l10n_extension.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../features/analysis/presentation/helpers/start_analysis.dart';
+import '../providers/bottom_nav_visibility_provider.dart';
 import 'gradient_background.dart';
 
+/// Animation duration for the bottom nav show/hide transition.
+const _navAnimDuration = Duration(milliseconds: 280);
+const _navAnimCurve = Curves.easeInOutCubic;
+
 /// Bottom navigation shell with 5 tabs and a prominent center FAB.
-class MainShell extends StatelessWidget {
+///
+/// The nav bar slides down and collapses when
+/// [bottomNavVisibilityProvider] is `false`, freeing the full screen for
+/// modal sheets, detail pages, and routine edit mode.
+class MainShell extends ConsumerWidget {
   const MainShell({super.key, required this.navigationShell});
 
   /// GoRouter navigation shell.
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isVisible = ref.watch(bottomNavVisibleProvider);
+
     return GradientBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: navigationShell,
-        bottomNavigationBar: _FloatingBottomNav(
-          navigationShell: navigationShell,
+        bottomNavigationBar: ClipRect(
+          child: AnimatedSlide(
+            duration: _navAnimDuration,
+            curve: _navAnimCurve,
+            offset: isVisible ? Offset.zero : const Offset(0, 1.4),
+            child: AnimatedSize(
+              duration: _navAnimDuration,
+              curve: _navAnimCurve,
+              alignment: Alignment.topCenter,
+              child: isVisible
+                  ? _FloatingBottomNav(navigationShell: navigationShell)
+                  : const SizedBox(width: double.infinity, height: 0),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-class _FloatingBottomNav extends StatelessWidget {
+class _FloatingBottomNav extends ConsumerWidget {
   const _FloatingBottomNav({required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -63,38 +89,38 @@ class _FloatingBottomNav extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
+        bottom: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
           child: Row(
             children: [
               _NavItem(
                 icon: LucideIcons.home,
-                label: 'Ana Sayfa',
+                label: context.l10n.homeNavLabel,
                 isSelected: navigationShell.currentIndex == 0,
                 onTap: () => navigationShell.goBranch(0),
               ),
               _NavItem(
                 icon: LucideIcons.trendingUp,
-                label: 'Ilerleme',
-                isSelected: navigationShell.currentIndex == 2,
-                onTap: () => navigationShell.goBranch(2),
-              ),
-              // Center FAB — Analyze
-              _CenterFab(
+                label: context.l10n.progressNavLabel,
                 isSelected: navigationShell.currentIndex == 1,
                 onTap: () => navigationShell.goBranch(1),
               ),
+              // Center FAB — Analyze (opens camera directly)
+              _CenterFab(
+                onTap: () => startAnalysisFlow(context, ref),
+              ),
               _NavItem(
                 icon: LucideIcons.sparkles,
-                label: 'Rutin',
-                isSelected: navigationShell.currentIndex == 3,
-                onTap: () => navigationShell.goBranch(3),
+                label: context.l10n.routineNavLabel,
+                isSelected: navigationShell.currentIndex == 2,
+                onTap: () => navigationShell.goBranch(2),
               ),
               _NavItem(
                 icon: LucideIcons.user,
-                label: 'Profil',
-                isSelected: navigationShell.currentIndex == 4,
-                onTap: () => navigationShell.goBranch(4),
+                label: context.l10n.profileNavLabel,
+                isSelected: navigationShell.currentIndex == 3,
+                onTap: () => navigationShell.goBranch(3),
               ),
             ],
           ),
@@ -105,9 +131,8 @@ class _FloatingBottomNav extends StatelessWidget {
 }
 
 class _CenterFab extends StatelessWidget {
-  const _CenterFab({required this.isSelected, required this.onTap});
+  const _CenterFab({required this.onTap});
 
-  final bool isSelected;
   final VoidCallback onTap;
 
   @override
@@ -145,14 +170,12 @@ class _CenterFab extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              'Analiz',
+              context.l10n.analyzeNavLabel,
               style: AppTextStyles.labelSmall.copyWith(
-                color: isSelected
-                    ? AppColors.primary
-                    : Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.45),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.45),
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
               ),
