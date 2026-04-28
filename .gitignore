@@ -44,7 +44,13 @@ app.*.map.json
 .env
 env.json
 
+# Patrol generated
+**/test_bundle.dart
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Supabase CLI generated artifacts
+supabase/.temp/
