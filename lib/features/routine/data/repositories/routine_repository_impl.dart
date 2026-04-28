@@ -30,7 +30,7 @@ class RoutineRepositoryImpl implements RoutineRepository {
         if (routine.id.isNotEmpty) 'id': routine.id,
         'user_id': routine.userId,
         'type': routine.type,
-        'steps': routine.steps
+        'steps_json': routine.steps
             .map((s) => s.toJson())
             .toList(),
         'is_active': routine.isActive,
@@ -93,6 +93,10 @@ class RoutineRepositoryImpl implements RoutineRepository {
           .toList();
     } catch (e, st) {
       log.e('Failed to fetch completions', e, st);
+      // Return empty list if table doesn't exist yet
+      if (e.toString().contains('PGRST205')) {
+        return [];
+      }
       rethrow;
     }
   }
@@ -104,12 +108,16 @@ class RoutineRepositoryImpl implements RoutineRepository {
       return _calculateStreak(completions);
     } catch (e, st) {
       log.e('Failed to calculate streak', e, st);
+      // Return empty streak if table doesn't exist yet
+      if (e.toString().contains('PGRST205')) {
+        return const StreakEntity();
+      }
       rethrow;
     }
   }
 
   RoutineEntity _mapToEntity(Map<String, dynamic> data) {
-    final stepsJson = data['steps'] as List<dynamic>? ?? [];
+    final stepsJson = data['steps_json'] as List<dynamic>? ?? [];
     final steps = stepsJson
         .map((s) => RoutineStepDetailEntity.fromJson(
               Map<String, dynamic>.from(s as Map),

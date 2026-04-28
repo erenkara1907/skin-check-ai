@@ -27,7 +27,7 @@ final subscriptionRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SubscriptionRepositoryRef = ProviderRef<SubscriptionRepository>;
-String _$isProHash() => r'a564164a5b645a3ee835cf546fc3a5877fa683ec';
+String _$isProHash() => r'35a7318b9d8dba866a71be3e38d39c0f6dd7f85c';
 
 /// Whether the current user has an active Pro subscription.
 ///

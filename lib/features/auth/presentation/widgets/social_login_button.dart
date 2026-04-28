@@ -109,17 +109,20 @@ class _SocialLoginButtonState extends State<SocialLoginButton>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildIcon(),
-                    const SizedBox(width: 10),
-                    Text(
-                      _isGoogle ? 'Google ile Giriş' : 'Apple ile Giriş',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: _isGoogle
-                            ? (isDark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.textPrimaryLight)
-                            : Colors.white,
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        _isGoogle ? 'Google' : 'Apple',
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _isGoogle
+                              ? (isDark
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.textPrimaryLight)
+                              : Colors.white,
+                        ),
                       ),
                     ),
                   ],

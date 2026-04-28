@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -46,7 +47,7 @@ class ScoreTrendChart extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 12, bottom: 16),
             child: Text(
-              'Skor Trendi',
+              context.l10n.scoreLabel,
               style: AppTextStyles.titleLarge,
             ),
           ),
@@ -93,7 +94,7 @@ class ScoreTrendChart extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            DateFormat('dd/MM')
+                            DateFormat('dd/MM', 'tr')
                                 .format(data[idx].date),
                             style: axisTextStyle,
                           ),
@@ -114,7 +115,7 @@ class ScoreTrendChart extends StatelessWidget {
                     getTooltipItems: (spots) => spots.map((s) {
                       final idx = s.x.toInt();
                       final dateStr = idx < data.length
-                          ? DateFormat('dd MMM')
+                          ? DateFormat('dd MMM', 'tr')
                               .format(data[idx].date)
                           : '';
                       return LineTooltipItem(

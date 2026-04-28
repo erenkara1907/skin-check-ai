@@ -70,12 +70,21 @@ class AnalysisRepositoryImpl implements AnalysisRepository {
   }
 
   AnalysisEntity _mapToEntity(Map<String, dynamic> data) {
-    final zoneScores = (data['zone_scores'] as List<dynamic>?)
-            ?.map((z) => ZoneScoreEntity.fromJson(
-                  Map<String, dynamic>.from(z as Map),
-                ))
-            .toList() ??
-        [];
+    final rawZones = data['zone_scores'] as List<dynamic>? ?? [];
+    final zoneScores = <ZoneScoreEntity>[];
+    for (final z in rawZones) {
+      try {
+        final map = Map<String, dynamic>.from(z as Map);
+        // Ensure score exists — fall back to severity-based estimate.
+        if (map['score'] == null && map['severity'] != null) {
+          final severity = (map['severity'] as num).toInt();
+          map['score'] = ((10 - severity) / 9 * 100).clamp(0, 100);
+        }
+        zoneScores.add(ZoneScoreEntity.fromJson(map));
+      } catch (e) {
+        log.w('Skipped invalid zone entry: $e');
+      }
+    }
 
     final aiJson = data['ai_response_json'] as Map<String, dynamic>?;
 

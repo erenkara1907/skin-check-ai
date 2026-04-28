@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -9,36 +10,33 @@ import '../../../../core/theme/app_text_styles.dart';
 class LandingFeaturesSection extends StatelessWidget {
   const LandingFeaturesSection({super.key});
 
-  static const _features = [
-    _Feature(
-      icon: LucideIcons.scanFace,
-      title: 'AI Cilt Analizi',
-      description:
-          'Yapay zekâ yüzünü 7 bölgede analiz eder ve detaylı skor verir.',
-      gradient: [AppColors.primary, AppColors.primaryLight],
-    ),
-    _Feature(
-      icon: LucideIcons.sparkles,
-      title: 'Kişisel Rutin',
-      description:
-          'Cilt tipine ve sorunlarına özel sabah/akşam bakım rutini oluşturur.',
-      gradient: [AppColors.secondary, AppColors.secondaryLight],
-    ),
-    _Feature(
-      icon: LucideIcons.trendingUp,
-      title: 'İlerleme Takibi',
-      description:
-          'Zaman içindeki cilt değişimini grafiklerle takip et.',
-      gradient: [AppColors.info, Color(0xFF60A5FA)],
-    ),
-    _Feature(
-      icon: LucideIcons.shoppingBag,
-      title: 'Ürün Önerileri',
-      description:
-          'Cilt sorunlarına uygun ürün önerileri al, hemen satın al.',
-      gradient: [AppColors.warning, Color(0xFFFCD34D)],
-    ),
-  ];
+  /// Builds the feature list with localized strings.
+  static List<_Feature> _buildFeatures(BuildContext context) => [
+        _Feature(
+          icon: LucideIcons.scanFace,
+          title: context.l10n.aiAnalysisFeatureTitle,
+          description: context.l10n.aiAnalysisFeatureDesc,
+          gradient: [AppColors.primary, AppColors.primaryLight],
+        ),
+        _Feature(
+          icon: LucideIcons.sparkles,
+          title: context.l10n.personalRoutineFeatureTitle,
+          description: context.l10n.personalRoutineFeatureDesc,
+          gradient: [AppColors.secondary, AppColors.secondaryLight],
+        ),
+        _Feature(
+          icon: LucideIcons.trendingUp,
+          title: context.l10n.progressTrackingFeatureTitle,
+          description: context.l10n.progressTrackingFeatureDesc,
+          gradient: [AppColors.info, Color(0xFF60A5FA)],
+        ),
+        _Feature(
+          icon: LucideIcons.shoppingBag,
+          title: context.l10n.productRecsFeatureTitle,
+          description: context.l10n.productRecsFeatureDesc,
+          gradient: [AppColors.warning, Color(0xFFFCD34D)],
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +45,7 @@ class LandingFeaturesSection extends StatelessWidget {
     final isDesktop = screenWidth > 1024;
     final isTablet = screenWidth > 768;
     final crossAxisCount = isDesktop ? 4 : (isTablet ? 2 : 1);
+    final features = _buildFeatures(context);
 
     return Container(
       width: double.infinity,
@@ -61,7 +60,7 @@ class LandingFeaturesSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Öne Çıkan Özellikler',
+                context.l10n.featuredFeaturesTitle,
                 style: AppTextStyles.displaySmall.copyWith(
                   color: isDark
                       ? AppColors.textPrimaryDark
@@ -70,7 +69,7 @@ class LandingFeaturesSection extends StatelessWidget {
               ).animate().fadeIn(duration: 600.ms),
               const SizedBox(height: 12),
               Text(
-                'Cilt bakımında yapay zekâ devrimini keşfet',
+                context.l10n.featuredFeaturesSubtitle,
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: isDark
                       ? AppColors.textSecondaryDark
@@ -87,9 +86,9 @@ class LandingFeaturesSection extends StatelessWidget {
                   mainAxisSpacing: 20,
                   childAspectRatio: crossAxisCount == 1 ? 2.2 : 0.85,
                 ),
-                itemCount: _features.length,
+                itemCount: features.length,
                 itemBuilder: (context, index) => _FeatureCard(
-                  feature: _features[index],
+                  feature: features[index],
                   index: index,
                   isDark: isDark,
                 ),

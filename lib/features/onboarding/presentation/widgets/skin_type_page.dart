@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -35,7 +36,7 @@ class SkinTypePage extends ConsumerWidget {
         children: [
           const SizedBox(height: 24),
           Text(
-            'Cilt tipin hangisi?',
+            context.l10n.skinTypeTitle,
             style: AppTextStyles.displaySmall.copyWith(
               color: isDark
                   ? AppColors.textPrimaryDark
@@ -44,7 +45,7 @@ class SkinTypePage extends ConsumerWidget {
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.15, end: 0),
           const SizedBox(height: 8),
           Text(
-            'Sana özel analiz için cilt tipini seç',
+            context.l10n.skinTypeSubtitle,
             style: AppTextStyles.bodyMedium.copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -76,7 +77,7 @@ class SkinTypePage extends ConsumerWidget {
             ),
           ),
           AppButton(
-            label: 'Devam',
+            label: context.l10n.continueButton,
             onPressed: state.canProceed ? onNext : null,
           ).animate(delay: 600.ms).fadeIn(duration: 300.ms),
           const SizedBox(height: 16),

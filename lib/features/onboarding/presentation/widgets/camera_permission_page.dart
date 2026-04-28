@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/logger.dart';
@@ -20,9 +21,23 @@ class CameraPermissionPage extends ConsumerWidget {
   /// Called after permission granted and onboarding completed.
   final VoidCallback onComplete;
 
-  Future<void> _requestAndComplete(WidgetRef ref) async {
+  Future<void> _requestAndComplete(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final status = await Permission.camera.request();
     log.d('Camera permission status: $status');
+
+    if (!status.isGranted && !status.isLimited) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.cameraInitError),
+          ),
+        );
+      }
+      return;
+    }
 
     final notifier = ref.read(onboardingNotifierProvider.notifier);
     final success = await notifier.completeOnboarding();
@@ -64,7 +79,7 @@ class CameraPermissionPage extends ConsumerWidget {
               ),
           const SizedBox(height: 32),
           Text(
-            'Cilt analizin için\nkameraya ihtiyacımız var',
+            context.l10n.cameraPermissionTitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.displaySmall.copyWith(
               color: isDark
@@ -88,7 +103,7 @@ class CameraPermissionPage extends ConsumerWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Fotoğrafların güvenle saklanır',
+                context.l10n.cameraSecurityMessage,
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: isDark
                       ? AppColors.textSecondaryDark
@@ -99,10 +114,12 @@ class CameraPermissionPage extends ConsumerWidget {
           ).animate(delay: 450.ms).fadeIn(duration: 300.ms),
           const Spacer(flex: 3),
           AppButton(
-            label: 'Analizimi Başlat',
+            label: context.l10n.startAnalysisButton,
             isLoading: state.isLoading,
             onPressed:
-                state.isLoading ? null : () => _requestAndComplete(ref),
+                state.isLoading
+                    ? null
+                    : () => _requestAndComplete(context, ref),
           ).animate(delay: 600.ms).fadeIn(duration: 400.ms).slideY(
                 begin: 0.3,
                 end: 0,

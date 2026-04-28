@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -48,14 +49,14 @@ class FirstAnalysisCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Ilk Analizini Yap!',
+            context.l10n.firstAnalysisTitle,
             style: AppTextStyles.headlineSmall.copyWith(
               color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Selfie cek, yapay zeka cildinizi 7 bolgede analiz etsin ve size ozel bakim onerisi alsin.',
+            context.l10n.firstAnalysisDescription,
             style: AppTextStyles.bodySmall.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               height: 1.5,
@@ -64,7 +65,7 @@ class FirstAnalysisCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           AppButton(
-            label: 'Kamerayi Ac',
+            label: context.l10n.openCameraButton,
             onPressed: onStartAnalysis,
             variant: AppButtonVariant.primary,
             icon: LucideIcons.camera,

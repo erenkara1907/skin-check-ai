@@ -1,3 +1,4 @@
+import '../entities/concern_timeline_entity.dart';
 import '../entities/photo_comparison_entity.dart';
 import '../entities/progress_summary_entity.dart';
 import '../entities/score_trend_entity.dart';
@@ -16,4 +17,7 @@ abstract class ProgressRepository {
 
   /// Fetch first and latest photos for comparison slider.
   Future<PhotoComparisonEntity> getPhotoComparison(String userId);
+
+  /// Fetch concern severity timeline across all analyses.
+  Future<List<ConcernTimelineEntity>> getConcernTimeline(String userId);
 }

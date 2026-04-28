@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -10,21 +11,22 @@ import '../../../../shared/widgets/app_card.dart';
 class WeeklyTipCard extends StatelessWidget {
   const WeeklyTipCard({super.key});
 
-  static const _tips = [
-    'Gunes kremi sadece yaz icin degil! Kis aylarinda da SPF 30+ kullanmayi ihmal etmeyin.',
-    'Cildinizi temizledikten sonra 60 saniye icinde nemlendirici surmeye ozen gosterin.',
-    'Haftada 2-3 kez hafif bir peeling cildinizin yenilenmesine yardimci olur.',
-    'Gunde en az 2 litre su icmek cildinizin nemli ve parlak kalmasini saglar.',
-    'Yastik kilifi haftada bir degistirmek cilt sagliginizi olumlu etkiler.',
-    'Retinol iceren urunleri sadece aksam rutininizde kullanin.',
-    'C vitamini serumu sabah rutininize ekleyerek cildinizi parlaklik kazandirin.',
+  List<String> _tips(BuildContext context) => [
+    context.l10n.tip1,
+    context.l10n.tip2,
+    context.l10n.tip3,
+    context.l10n.tip4,
+    context.l10n.tip5,
+    context.l10n.tip6,
+    context.l10n.tip7,
   ];
 
-  String _currentTip() {
+  String _currentTip(BuildContext context) {
+    final tips = _tips(context);
     final weekOfYear = DateTime.now().difference(
       DateTime(DateTime.now().year),
     ).inDays ~/ 7;
-    return _tips[weekOfYear % _tips.length];
+    return tips[weekOfYear % tips.length];
   }
 
   @override
@@ -54,7 +56,7 @@ class WeeklyTipCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Haftanin Ipucu',
+                  context.l10n.weeklyTipTitle,
                   style: AppTextStyles.titleMedium.copyWith(
                     color: theme.colorScheme.onSurface
                         .withValues(alpha: 0.7),
@@ -62,7 +64,7 @@ class WeeklyTipCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _currentTip(),
+                  _currentTip(context),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: theme.colorScheme.onSurface,
                     height: 1.5,

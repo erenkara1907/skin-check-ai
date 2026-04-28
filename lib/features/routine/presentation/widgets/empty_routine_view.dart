@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -40,14 +41,13 @@ class EmptyRoutineView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Henüz Rutin Yok',
+              context.l10n.noRoutineTitle,
               style: AppTextStyles.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Cilt analizine göre kişisel sabah ve akşam '
-              'bakım rutinini oluştur.',
+              context.l10n.noRoutineDescription,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: isDark
                     ? AppColors.textSecondaryDark
@@ -57,7 +57,7 @@ class EmptyRoutineView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             AppButton(
-              label: 'Rutin Oluştur',
+              label: context.l10n.createRoutineButton,
               icon: LucideIcons.wand2,
               onPressed: onCreateFromAnalysis,
             ),

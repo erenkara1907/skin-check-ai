@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/utils/logger.dart';
@@ -50,57 +49,74 @@ class CameraState {
   }
 }
 
-/// Provides the [CameraDataSource] singleton.
-@riverpod
-CameraDataSource cameraDataSource(Ref ref) {
-  final ds = CameraDataSource();
-  ref.onDispose(() => ds.dispose());
-  return ds;
-}
-
 /// Manages camera lifecycle, face detection, and capture flow.
 @riverpod
 class CameraNotifier extends _$CameraNotifier {
-  late CameraDataSource _dataSource;
+  CameraDataSource? _dataSource;
   bool _isDetecting = false;
+  bool _disposed = false;
 
   @override
   CameraState build() {
-    _dataSource = ref.read(cameraDataSourceProvider);
-    ref.onDispose(_cleanup);
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+      _dataSource?.dispose();
+      _dataSource = null;
+    });
     return const CameraState();
   }
 
   /// Initialize the front camera and start face detection.
   Future<void> initCamera() async {
     try {
-      final controller = await _dataSource.initialize();
+      log.d('Initializing camera...');
+      _dataSource = CameraDataSource();
+      final controller = await _dataSource!.initialize();
+      if (_disposed) return;
       state = state.copyWith(
         controller: controller,
         isInitialized: true,
       );
-      _startFaceDetection(controller);
+      log.d('Camera ready, delaying face detection...');
+      // Let the preview render before starting heavy ML processing
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (_disposed) return;
+      if (state.isInitialized && !state.isCapturing) {
+        _startFaceDetection(controller);
+      }
     } catch (e, st) {
+      if (_disposed) return;
       log.e('Camera init failed', e, st);
       state = state.copyWith(error: 'Kamera başlatılamadı');
     }
   }
 
   void _startFaceDetection(CameraController controller) {
-    controller.startImageStream((image) async {
-      if (_isDetecting) return;
-      _isDetecting = true;
-      try {
-        final count = await _dataSource.detectFaces(image);
-        if (state.faceDetected != (count > 0)) {
-          state = state.copyWith(faceDetected: count > 0);
+    int frameSkip = 0;
+    try {
+      controller.startImageStream((image) async {
+        // Process every 3rd frame to reduce CPU load
+        frameSkip++;
+        if (frameSkip % 3 != 0) return;
+        if (_isDetecting || _disposed) return;
+        _isDetecting = true;
+        try {
+          final count = await _dataSource?.detectFaces(image) ?? 0;
+          if (_disposed) return;
+          if (state.faceDetected != (count > 0)) {
+            state = state.copyWith(faceDetected: count > 0);
+          }
+        } catch (e) {
+          log.w('Face detection frame error: $e');
+        } finally {
+          _isDetecting = false;
         }
-      } catch (_) {
-        // Silently skip detection errors
-      } finally {
-        _isDetecting = false;
-      }
-    });
+      });
+      log.d('Face detection stream started');
+    } catch (e, st) {
+      log.e('Failed to start image stream', e, st);
+    }
   }
 
   /// Start the 3-2-1 countdown, then capture.
@@ -127,7 +143,7 @@ class CameraNotifier extends _$CameraNotifier {
   /// Capture the photo and return bytes.
   Future<List<int>> capturePhoto() async {
     try {
-      final bytes = await _dataSource.capturePhoto();
+      final bytes = await _dataSource!.capturePhoto();
       return bytes;
     } catch (e, st) {
       log.e('Capture failed', e, st);
@@ -150,9 +166,5 @@ class CameraNotifier extends _$CameraNotifier {
     if (state.controller != null && state.isInitialized) {
       _startFaceDetection(state.controller!);
     }
-  }
-
-  void _cleanup() {
-    _dataSource.dispose();
   }
 }

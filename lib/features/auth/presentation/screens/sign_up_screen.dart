@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_glassmorphism_card.dart';
@@ -54,7 +55,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Kayıt başarısız. Lütfen tekrar deneyin.'),
+            content: Text(context.l10n.signupError),
             backgroundColor: AppColors.error,
           ),
         );
@@ -70,10 +71,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const AuthLogoHeader(
+                  AuthLogoHeader(
                     icon: LucideIcons.userPlus,
-                    title: 'Hesap Oluştur',
-                    subtitle: 'Cilt bakım yolculuğuna başla',
+                    title: context.l10n.signupTitle,
+                    subtitle: context.l10n.signupSubtitle,
                     gradientColors: [AppColors.secondary, AppColors.primary],
                     glowColor: AppColors.secondary,
                   ),
@@ -98,7 +99,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Kayıt Ol',
+              context.l10n.signupFormTitle,
               style: GoogleFonts.outfit(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -111,46 +112,46 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             const SizedBox(height: 24),
             AuthTextField(
               controller: _nameController,
-              label: 'Ad Soyad',
-              hint: 'Adınız Soyadınız',
+              label: context.l10n.nameLabel,
+              hint: context.l10n.nameHint,
               textInputAction: TextInputAction.next,
               prefixIcon: LucideIcons.user,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'İsim gerekli';
+                if (v == null || v.isEmpty) return context.l10n.nameRequired;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             AuthTextField(
               controller: _emailController,
-              label: 'E-posta',
-              hint: 'ornek@email.com',
+              label: context.l10n.emailLabel,
+              hint: context.l10n.emailHint,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               prefixIcon: LucideIcons.mail,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'E-posta gerekli';
-                if (!v.contains('@')) return 'Geçerli bir e-posta girin';
+                if (v == null || v.isEmpty) return context.l10n.emailRequired;
+                if (!v.contains('@')) return context.l10n.emailInvalid;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             AuthTextField(
               controller: _passwordController,
-              label: 'Şifre',
+              label: context.l10n.passwordLabel,
               hint: '••••••••',
               obscureText: true,
               textInputAction: TextInputAction.done,
               prefixIcon: LucideIcons.lock,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Şifre gerekli';
-                if (v.length < 6) return 'En az 6 karakter';
+                if (v == null || v.isEmpty) return context.l10n.passwordRequired;
+                if (v.length < 6) return context.l10n.passwordMinLength;
                 return null;
               },
             ),
             const SizedBox(height: 24),
             AuthGradientButton(
-              label: 'Kayıt Ol',
+              label: context.l10n.signupButton,
               isLoading: isLoading,
               onPressed: _handleSignUp,
               gradientColors: const [
@@ -172,7 +173,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Zaten hesabın var mı? ',
+          context.l10n.loginPrompt,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: isDark
@@ -183,7 +184,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         GestureDetector(
           onTap: () => context.pop(),
           child: Text(
-            'Giriş Yap',
+            context.l10n.loginLink,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w700,

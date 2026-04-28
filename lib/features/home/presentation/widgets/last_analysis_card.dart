@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -14,6 +15,7 @@ class LastAnalysisCard extends StatelessWidget {
     super.key,
     required this.analysis,
     required this.onReanalyze,
+    this.onTap,
   });
 
   /// Latest analysis result.
@@ -22,12 +24,15 @@ class LastAnalysisCard extends StatelessWidget {
   /// Called when user taps "Tekrar analiz et".
   final VoidCallback onReanalyze;
 
-  String _daysAgoText() {
+  /// Called when the card is tapped (navigate to detail).
+  final VoidCallback? onTap;
+
+  String _daysAgoText(BuildContext context) {
     if (analysis.createdAt == null) return '';
     final diff = DateTime.now().difference(analysis.createdAt!).inDays;
-    if (diff == 0) return 'Bugun';
-    if (diff == 1) return '1 gun once';
-    return '$diff gun once';
+    if (diff == 0) return context.l10n.todayLabel;
+    if (diff == 1) return context.l10n.yesterdayLabel;
+    return context.l10n.daysAgoLabel(diff);
   }
 
   @override
@@ -35,14 +40,29 @@ class LastAnalysisCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AppCard(
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Son Analiz',
-            style: AppTextStyles.titleMedium.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.l10n.lastAnalysisTitle,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ),
+              if (onTap != null)
+                Icon(
+                  LucideIcons.chevronRight,
+                  size: 18,
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
           Row(
@@ -51,7 +71,7 @@ class LastAnalysisCard extends StatelessWidget {
                 score: analysis.overallScore,
                 size: 80,
                 strokeWidth: 8,
-                label: 'Skor',
+                label: context.l10n.scoreLabel,
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -59,14 +79,14 @@ class LastAnalysisCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Cilt Yasi: ${analysis.skinAge}',
+                      context.l10n.skinAgeDisplay(analysis.skinAge),
                       style: AppTextStyles.titleLarge.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _daysAgoText(),
+                      _daysAgoText(context),
                       style: AppTextStyles.bodySmall.copyWith(
                         color: theme.colorScheme.onSurface
                             .withValues(alpha: 0.5),
@@ -91,12 +111,24 @@ class LastAnalysisCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           AppButton(
-            label: 'Tekrar Analiz Et',
+            label: context.l10n.reanalyzeButton,
             onPressed: onReanalyze,
             variant: AppButtonVariant.outline,
             icon: LucideIcons.refreshCw,
             fullWidth: true,
           ),
+          if (onTap != null) ...[
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                '${context.l10n.viewDetailsCta} →',
+                style: AppTextStyles.labelMedium.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);

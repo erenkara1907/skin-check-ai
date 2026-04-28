@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -51,14 +52,14 @@ class RoutineTabBar extends StatelessWidget {
         ),
         unselectedLabelStyle: AppTextStyles.labelLarge,
         splashBorderRadius: BorderRadius.circular(12),
-        tabs: const [
+        tabs: [
           Tab(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.sun, size: 18),
-                SizedBox(width: 8),
-                Text('Sabah'),
+                const Icon(LucideIcons.sun, size: 18),
+                const SizedBox(width: 8),
+                Text(context.l10n.morningTab),
               ],
             ),
           ),
@@ -66,9 +67,9 @@ class RoutineTabBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(LucideIcons.moon, size: 18),
-                SizedBox(width: 8),
-                Text('Akşam'),
+                const Icon(LucideIcons.moon, size: 18),
+                const SizedBox(width: 8),
+                Text(context.l10n.eveningTab),
               ],
             ),
           ),

@@ -89,6 +89,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  String? get authProvider => _dataSource.authProvider;
+
+  @override
+  Future<void> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _dataSource.updatePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    } catch (e, st) {
+      log.e('Password update failed', e, st);
+      rethrow;
+    }
+  }
+
+  @override
   Future<UserEntity> fetchUserProfile(String userId) async {
     try {
       return await _dataSource.fetchUserProfile(userId);

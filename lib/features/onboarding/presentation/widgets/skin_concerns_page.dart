@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -28,7 +29,7 @@ class SkinConcernsPage extends ConsumerWidget {
         children: [
           const SizedBox(height: 24),
           Text(
-            'En çok neyi\niyileştirmek istiyorsun?',
+            context.l10n.skinConcernsTitle,
             textAlign: TextAlign.center,
             style: AppTextStyles.displaySmall.copyWith(
               color: isDark
@@ -38,7 +39,7 @@ class SkinConcernsPage extends ConsumerWidget {
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.15, end: 0),
           const SizedBox(height: 8),
           Text(
-            'Birden fazla seçebilirsin',
+            context.l10n.skinConcernsSubtitle,
             style: AppTextStyles.bodyMedium.copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -69,7 +70,7 @@ class SkinConcernsPage extends ConsumerWidget {
             ),
           ),
           AppButton(
-            label: 'Devam',
+            label: context.l10n.continueButton,
             onPressed: state.canProceed ? onNext : null,
           ).animate(delay: 600.ms).fadeIn(duration: 300.ms),
           const SizedBox(height: 16),

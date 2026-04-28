@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../providers/auth_provider.dart';
@@ -61,7 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Giriş başarısız. Lütfen tekrar deneyin.'),
+            content: Text(context.l10n.loginError),
             backgroundColor: AppColors.error,
           ),
         );
@@ -77,10 +78,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const AuthLogoHeader(
+                  AuthLogoHeader(
                     icon: LucideIcons.scan,
-                    title: 'SkinCheck AI',
-                    subtitle: 'Cildin için AI destekli analiz',
+                    title: context.l10n.appName,
+                    subtitle: context.l10n.appTagline,
                   ),
                   const SizedBox(height: 32),
                   _buildCard(isDark),
@@ -103,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Giriş Yap',
+              context.l10n.loginTitle,
               style: GoogleFonts.outfit(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -115,35 +116,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const SizedBox(height: 24),
             AuthTextField(
+              key: const Key('loginEmailField'),
               controller: _emailController,
-              label: 'E-posta',
-              hint: 'ornek@email.com',
+              label: context.l10n.emailLabel,
+              hint: context.l10n.emailHint,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               prefixIcon: LucideIcons.mail,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'E-posta gerekli';
-                if (!v.contains('@')) return 'Geçerli bir e-posta girin';
+                if (v == null || v.isEmpty) return context.l10n.emailRequired;
+                if (!v.contains('@')) return context.l10n.emailInvalid;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             AuthTextField(
+              key: const Key('loginPasswordField'),
               controller: _passwordController,
-              label: 'Şifre',
+              label: context.l10n.passwordLabel,
               hint: '••••••••',
               obscureText: true,
               textInputAction: TextInputAction.done,
               prefixIcon: LucideIcons.lock,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Şifre gerekli';
-                if (v.length < 6) return 'En az 6 karakter';
+                if (v == null || v.isEmpty) return context.l10n.passwordRequired;
+                if (v.length < 6) return context.l10n.passwordMinLength;
                 return null;
               },
             ),
             const SizedBox(height: 24),
             AuthGradientButton(
-              label: 'Giriş Yap',
+              key: const Key('loginSubmitButton'),
+              label: context.l10n.loginButton,
               isLoading: _activeAction == _AuthAction.email,
               onPressed: _handleLogin,
               gradientColors: const [AppColors.primary, AppColors.primaryDark],
@@ -155,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ],
         ),
       ),
-    ).animate().fadeIn(delay: 300.ms, duration: 500.ms).slideY(
+    ).animate().fadeIn(duration: 500.ms).slideY(
           begin: 0.1,
           curve: Curves.easeOut,
         );
@@ -171,7 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'veya',
+            context.l10n.orDivider,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
               color: isDark
@@ -230,7 +234,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Hesabın yok mu? ',
+          context.l10n.signupPrompt,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: isDark
@@ -241,7 +245,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         GestureDetector(
           onTap: () => context.push(AppRoutes.signUp),
           child: Text(
-            'Kayıt Ol',
+            context.l10n.signupLink,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -250,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ],
-    ).animate().fadeIn(delay: 500.ms, duration: 500.ms);
+    ).animate().fadeIn(duration: 500.ms);
   }
 
   bool _isIOSPlatform() {

@@ -1,6 +1,7 @@
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/revenuecat_service.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/subscription_entity.dart';
 
@@ -8,12 +9,18 @@ import '../../domain/entities/subscription_entity.dart';
 class RevenueCatDatasource {
   /// Fetches the current customer info and maps to [SubscriptionEntity].
   Future<SubscriptionEntity> getSubscription() async {
+    if (!RevenueCatService.isConfigured) {
+      return const SubscriptionEntity();
+    }
     final customerInfo = await Purchases.getCustomerInfo();
     return _mapCustomerInfo(customerInfo);
   }
 
   /// Purchases a package by [packageId] from the default offering.
   Future<SubscriptionEntity> purchase(String packageId) async {
+    if (!RevenueCatService.isConfigured) {
+      throw Exception('RevenueCat not configured');
+    }
     final offerings = await Purchases.getOfferings();
     final offering = offerings.current;
 
@@ -32,6 +39,9 @@ class RevenueCatDatasource {
 
   /// Restores previously purchased subscriptions.
   Future<SubscriptionEntity> restorePurchases() async {
+    if (!RevenueCatService.isConfigured) {
+      throw Exception('RevenueCat not configured');
+    }
     final customerInfo = await Purchases.restorePurchases();
     return _mapCustomerInfo(customerInfo);
   }

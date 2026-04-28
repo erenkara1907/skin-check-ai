@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -49,14 +50,14 @@ class MiniProgressChart extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Ilerleme',
+                context.l10n.progressTitle,
                 style: AppTextStyles.titleMedium.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               const Spacer(),
               Text(
-                'Tumu',
+                context.l10n.viewAllButton,
                 style: AppTextStyles.labelSmall.copyWith(
                   color: AppColors.primary,
                 ),
@@ -91,7 +92,7 @@ class MiniProgressChart extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            DateFormat('d MMM').format(trend[idx].date),
+                            DateFormat('d MMM', 'tr').format(trend[idx].date),
                             style: AppTextStyles.labelSmall.copyWith(
                               color: theme.colorScheme.onSurface
                                   .withValues(alpha: 0.4),

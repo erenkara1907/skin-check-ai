@@ -45,7 +45,9 @@ class RoutineStepCard extends StatelessWidget {
       progress,
     )!;
 
-    return AnimatedContainer(
+    return GestureDetector(
+      onTap: onToggle,
+      child: AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -99,6 +101,7 @@ class RoutineStepCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../shared/widgets/app_bottom_sheet.dart';
 
 /// Share destination options.
 enum ShareDestination { instagram, whatsapp, other }
@@ -18,12 +21,16 @@ class ShareOptionsSheet extends StatelessWidget {
   final ValueChanged<ShareDestination> onSelected;
 
   /// Shows the share options bottom sheet.
-  static Future<ShareDestination?> show(BuildContext context) {
-    return showModalBottomSheet<ShareDestination>(
+  static Future<ShareDestination?> show(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return showAppBottomSheet<ShareDestination>(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => ShareOptionsSheet(
-        onSelected: (dest) => Navigator.of(context).pop(dest),
+      ref: ref,
+      isScrollControlled: false,
+      builder: (sheetCtx) => ShareOptionsSheet(
+        onSelected: (dest) => Navigator.of(sheetCtx).pop(dest),
       ),
     );
   }
@@ -58,7 +65,7 @@ class ShareOptionsSheet extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Paylas',
+                context.l10n.shareTitle,
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -69,19 +76,19 @@ class ShareOptionsSheet extends StatelessWidget {
                 children: [
                   _ShareOption(
                     icon: LucideIcons.instagram,
-                    label: 'Instagram',
+                    label: context.l10n.instagramOption,
                     color: const Color(0xFFE1306C),
                     onTap: () => onSelected(ShareDestination.instagram),
                   ),
                   _ShareOption(
                     icon: LucideIcons.messageCircle,
-                    label: 'WhatsApp',
+                    label: context.l10n.whatsappOption,
                     color: const Color(0xFF25D366),
                     onTap: () => onSelected(ShareDestination.whatsapp),
                   ),
                   _ShareOption(
                     icon: LucideIcons.share2,
-                    label: 'Diger',
+                    label: context.l10n.otherOption,
                     color: AppColors.primary,
                     onTap: () => onSelected(ShareDestination.other),
                   ),

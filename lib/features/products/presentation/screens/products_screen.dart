@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/gradient_background.dart';
@@ -24,35 +25,19 @@ class ProductsScreen extends ConsumerWidget {
         : ref.watch(recommendedProductsProvider(concerns));
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          concerns.isEmpty
+              ? context.l10n.productCatalogTitle
+              : context.l10n.recommendedProductsTitle,
+        ),
+      ),
+      extendBodyBehindAppBar: true,
       body: GradientBackground(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Row(
-                  children: [
-                    if (Navigator.of(context).canPop())
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back),
-                      ),
-                    Expanded(
-                      child: Text(
-                        concerns.isEmpty
-                            ? 'Ürün Kataloğu'
-                            : 'Önerilen Ürünler',
-                        style: AppTextStyles.headlineMedium.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
               // Content
               Expanded(
                 child: productsAsync.when(
@@ -135,7 +120,7 @@ class _ErrorView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Ürünler yüklenirken hata oluştu',
+              context.l10n.productsLoadError,
               style: AppTextStyles.titleMedium.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -156,7 +141,7 @@ class _ErrorView extends StatelessWidget {
             TextButton.icon(
               onPressed: onRetry,
               icon: const Icon(LucideIcons.refreshCw, size: 16),
-              label: const Text('Tekrar Dene'),
+              label: Text(context.l10n.retryButton),
             ),
           ],
         ),
@@ -189,8 +174,8 @@ class _EmptyView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               hasConcerns
-                  ? 'Sorunlarınıza uygun ürün bulunamadı'
-                  : 'Henüz ürün eklenmemiş',
+                  ? context.l10n.noMatchingProducts
+                  : context.l10n.noProductsAdded,
               style: AppTextStyles.titleMedium.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
               ),

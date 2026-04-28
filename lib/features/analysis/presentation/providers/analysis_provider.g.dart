@@ -26,28 +26,7 @@ final analysisRepositoryProvider = Provider<AnalysisRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AnalysisRepositoryRef = ProviderRef<AnalysisRepository>;
-String _$analysisNotifierHash() => r'1f52838584d897b45214d57e409e71f4a24ec81f';
-
-/// Manages the full analysis pipeline: upload → analyze → result.
-///
-/// Copied from [AnalysisNotifier].
-@ProviderFor(AnalysisNotifier)
-final analysisNotifierProvider =
-    AutoDisposeAsyncNotifierProvider<
-      AnalysisNotifier,
-      AnalysisEntity?
-    >.internal(
-      AnalysisNotifier.new,
-      name: r'analysisNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$analysisNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$AnalysisNotifier = AutoDisposeAsyncNotifier<AnalysisEntity?>;
-String _$analysisHistoryHash() => r'66d736de007bbba0dcd03ba7c6a2ad933c654a94';
+String _$analysisDetailHash() => r'd2b9973358881a8fce4b6c421a633008bf33b546';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -69,6 +48,157 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// Fetches a single analysis by ID (read-only, does not affect global state).
+///
+/// Copied from [analysisDetail].
+@ProviderFor(analysisDetail)
+const analysisDetailProvider = AnalysisDetailFamily();
+
+/// Fetches a single analysis by ID (read-only, does not affect global state).
+///
+/// Copied from [analysisDetail].
+class AnalysisDetailFamily extends Family<AsyncValue<AnalysisEntity?>> {
+  /// Fetches a single analysis by ID (read-only, does not affect global state).
+  ///
+  /// Copied from [analysisDetail].
+  const AnalysisDetailFamily();
+
+  /// Fetches a single analysis by ID (read-only, does not affect global state).
+  ///
+  /// Copied from [analysisDetail].
+  AnalysisDetailProvider call(String analysisId) {
+    return AnalysisDetailProvider(analysisId);
+  }
+
+  @override
+  AnalysisDetailProvider getProviderOverride(
+    covariant AnalysisDetailProvider provider,
+  ) {
+    return call(provider.analysisId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'analysisDetailProvider';
+}
+
+/// Fetches a single analysis by ID (read-only, does not affect global state).
+///
+/// Copied from [analysisDetail].
+class AnalysisDetailProvider
+    extends AutoDisposeFutureProvider<AnalysisEntity?> {
+  /// Fetches a single analysis by ID (read-only, does not affect global state).
+  ///
+  /// Copied from [analysisDetail].
+  AnalysisDetailProvider(String analysisId)
+    : this._internal(
+        (ref) => analysisDetail(ref as AnalysisDetailRef, analysisId),
+        from: analysisDetailProvider,
+        name: r'analysisDetailProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$analysisDetailHash,
+        dependencies: AnalysisDetailFamily._dependencies,
+        allTransitiveDependencies:
+            AnalysisDetailFamily._allTransitiveDependencies,
+        analysisId: analysisId,
+      );
+
+  AnalysisDetailProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.analysisId,
+  }) : super.internal();
+
+  final String analysisId;
+
+  @override
+  Override overrideWith(
+    FutureOr<AnalysisEntity?> Function(AnalysisDetailRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: AnalysisDetailProvider._internal(
+        (ref) => create(ref as AnalysisDetailRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        analysisId: analysisId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<AnalysisEntity?> createElement() {
+    return _AnalysisDetailProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AnalysisDetailProvider && other.analysisId == analysisId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, analysisId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin AnalysisDetailRef on AutoDisposeFutureProviderRef<AnalysisEntity?> {
+  /// The parameter `analysisId` of this provider.
+  String get analysisId;
+}
+
+class _AnalysisDetailProviderElement
+    extends AutoDisposeFutureProviderElement<AnalysisEntity?>
+    with AnalysisDetailRef {
+  _AnalysisDetailProviderElement(super.provider);
+
+  @override
+  String get analysisId => (origin as AnalysisDetailProvider).analysisId;
+}
+
+String _$analysisNotifierHash() => r'6371ce2722f7aceb128a7360a576bd7b3c1d192c';
+
+/// Manages the full analysis pipeline: upload → analyze → result.
+///
+/// Copied from [AnalysisNotifier].
+@ProviderFor(AnalysisNotifier)
+final analysisNotifierProvider =
+    AsyncNotifierProvider<AnalysisNotifier, AnalysisEntity?>.internal(
+      AnalysisNotifier.new,
+      name: r'analysisNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$analysisNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$AnalysisNotifier = AsyncNotifier<AnalysisEntity?>;
+String _$analysisHistoryHash() => r'66d736de007bbba0dcd03ba7c6a2ad933c654a94';
 
 abstract class _$AnalysisHistory
     extends BuildlessAutoDisposeAsyncNotifier<List<AnalysisEntity>> {

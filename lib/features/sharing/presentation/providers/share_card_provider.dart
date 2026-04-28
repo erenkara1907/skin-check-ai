@@ -49,15 +49,19 @@ class ShareCardNotifier extends _$ShareCardNotifier {
       );
       await file.writeAsBytes(bytes);
 
+      final text = _shareText(destination);
       await Share.shareXFiles(
-        [XFile(file.path)],
-        text: _shareText(destination),
+        [XFile(file.path, mimeType: 'image/png')],
+        text: text.isEmpty ? null : text,
+        subject: 'SkinCheck AI',
       );
 
-      // Cleanup temp file
-      if (file.existsSync()) {
-        await file.delete();
-      }
+      // Delay cleanup to give receiving app time to read the file
+      Future.delayed(const Duration(seconds: 10), () {
+        if (file.existsSync()) {
+          file.delete();
+        }
+      });
     } catch (e, st) {
       dev.log('Share failed: $e', name: 'ShareCard', stackTrace: st);
     } finally {
@@ -68,8 +72,7 @@ class ShareCardNotifier extends _$ShareCardNotifier {
   String _shareText(ShareDestination destination) {
     return switch (destination) {
       ShareDestination.instagram => '',
-      ShareDestination.whatsapp =>
-        'SkinCheck AI ile cilt analizimi yaptim! 🔬',
+      ShareDestination.whatsapp => '',
       ShareDestination.other =>
         'SkinCheck AI ile cilt analizimi yaptim! 🔬',
     };

@@ -51,11 +51,13 @@ class RoutineNotifier extends _$RoutineNotifier {
         steps: _mapSteps(analysis.eveningRoutine),
       );
 
-      final savedMorning = await repo.saveRoutine(morning);
-      final savedEvening = await repo.saveRoutine(evening);
+      final results = await Future.wait([
+        repo.saveRoutine(morning),
+        repo.saveRoutine(evening),
+      ]);
       log.i('Routines created from analysis');
 
-      return [savedMorning, savedEvening];
+      return results;
     });
   }
 

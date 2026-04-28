@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -35,7 +36,7 @@ class ProfileStatsRow extends StatelessWidget {
         Expanded(
           child: _StatCard(
             value: '$analysisCount',
-            label: 'Toplam Analiz',
+            label: context.l10n.totalAnalysesLabel,
             surface: surface,
             border: border,
             textColor: textColor,
@@ -46,9 +47,9 @@ class ProfileStatsRow extends StatelessWidget {
         Expanded(
           child: _StatCard(
             value: joinDate != null
-                ? DateFormat('MMM yyyy').format(joinDate!)
+                ? DateFormat('MMM yyyy', 'tr').format(joinDate!)
                 : '-',
-            label: 'Uyelik Tarihi',
+            label: context.l10n.membershipDateLabel,
             surface: surface,
             border: border,
             textColor: textColor,

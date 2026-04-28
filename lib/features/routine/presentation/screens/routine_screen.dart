@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-import '../../../../core/services/notification_service.dart';
+import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../shared/providers/bottom_nav_visibility_provider.dart';
 import '../../../../shared/widgets/gradient_background.dart';
 import '../../../analysis/presentation/providers/analysis_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -40,21 +42,27 @@ class _RoutineScreenState extends ConsumerState<RoutineScreen>
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 2),
     );
-    _scheduleNotifications();
   }
 
   @override
   void dispose() {
+    // Balance any outstanding hide() from edit mode before the widget goes.
+    if (_isEditing) {
+      ref.read(bottomNavVisibilityProvider.notifier).show();
+    }
     _tabController.dispose();
     _confettiController.dispose();
     super.dispose();
   }
 
-  Future<void> _scheduleNotifications() async {
-    final granted =
-        await NotificationService.instance.requestPermission();
-    if (granted) {
-      await NotificationService.instance.scheduleDailyReminders();
+  void _toggleEditing() {
+    final next = !_isEditing;
+    setState(() => _isEditing = next);
+    final notifier = ref.read(bottomNavVisibilityProvider.notifier);
+    if (next) {
+      notifier.hide();
+    } else {
+      notifier.show();
     }
   }
 
@@ -83,7 +91,7 @@ class _RoutineScreenState extends ConsumerState<RoutineScreen>
                         child: CircularProgressIndicator(),
                       ),
                       error: (e, _) =>
-                          Center(child: Text('Hata: $e')),
+                          Center(child: Text(context.l10n.errorDisplay(e.toString()))),
                       data: (routines) =>
                           _buildContent(routines, userId),
                     ),
@@ -116,11 +124,15 @@ class _RoutineScreenState extends ConsumerState<RoutineScreen>
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
       child: Row(
         children: [
-          Text('Bakım Rutini', style: AppTextStyles.headlineMedium),
+          Text(context.l10n.routineTitle, style: AppTextStyles.headlineMedium),
           const Spacer(),
           IconButton(
-            onPressed: () =>
-                setState(() => _isEditing = !_isEditing),
+            onPressed: () => _launchGuidedMode(),
+            icon: const Icon(LucideIcons.play, size: 22),
+            tooltip: context.l10n.guidedModeTitle,
+          ),
+          IconButton(
+            onPressed: _toggleEditing,
             icon: Icon(
               _isEditing ? LucideIcons.check : LucideIcons.pencil,
               size: 22,
@@ -176,6 +188,23 @@ class _RoutineScreenState extends ConsumerState<RoutineScreen>
     );
   }
 
+  void _launchGuidedMode() {
+    final userId = ref.read(authNotifierProvider).valueOrNull?.id;
+    if (userId == null) return;
+    final routines =
+        ref.read(routineNotifierProvider(userId)).valueOrNull ?? [];
+    if (routines.isEmpty) return;
+
+    // Pick morning or evening based on current time
+    final isMorning = DateTime.now().hour < 14;
+    final target = isMorning ? 'morning' : 'evening';
+    final routine = routines.firstWhere(
+      (r) => r.type == target,
+      orElse: () => routines.first,
+    );
+    context.push(AppRoutes.guidedRoutine, extra: routine.steps);
+  }
+
   void _onAllCompleted(RoutineEntity routine, String userId) {
     _confettiController.play();
     final completedSteps =
@@ -198,8 +227,8 @@ class _RoutineScreenState extends ConsumerState<RoutineScreen>
     if (history == null || history.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Önce bir cilt analizi yapmalısın!'),
+          SnackBar(
+            content: Text(context.l10n.noAnalysisSnackbar),
           ),
         );
         context.go('/analyze');

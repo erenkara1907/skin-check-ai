@@ -63,7 +63,29 @@ final joinDateProvider = AutoDisposeFutureProvider<DateTime?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef JoinDateRef = AutoDisposeFutureProviderRef<DateTime?>;
-String _$profileActionsHash() => r'3114a3a314ec9383079b1c0eeae02dbd037ebbae';
+String _$currentAuthProviderHash() =>
+    r'67e1fee91f852e461ed74883c47932837a0c9a14';
+
+/// Authentication provider for the current session
+/// (`email`, `google`, `apple`). Used to hide the "Change Password"
+/// entry for OAuth users who never set a password.
+///
+/// Copied from [currentAuthProvider].
+@ProviderFor(currentAuthProvider)
+final currentAuthProviderProvider = AutoDisposeProvider<String?>.internal(
+  currentAuthProvider,
+  name: r'currentAuthProviderProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentAuthProviderHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CurrentAuthProviderRef = AutoDisposeProviderRef<String?>;
+String _$profileActionsHash() => r'5ba1f65b9e9a1e1f4f3f6315b95424c12e91ddf8';
 
 /// Manages profile update operations.
 ///

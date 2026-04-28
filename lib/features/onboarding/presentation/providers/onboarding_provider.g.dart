@@ -28,7 +28,7 @@ final onboardingRepositoryProvider =
 // ignore: unused_element
 typedef OnboardingRepositoryRef = AutoDisposeProviderRef<OnboardingRepository>;
 String _$onboardingNotifierHash() =>
-    r'cfe5e86a43ba1c585040fae0553dc1929d96e41e';
+    r'4e9ae580f28a3c951d6879502dbb15c5039aab04';
 
 /// Manages the onboarding flow state.
 ///
