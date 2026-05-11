@@ -6,26 +6,7 @@ part of 'camera_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$cameraDataSourceHash() => r'4aeaf180d8010a42520236677e8eeb9d64788e4a';
-
-/// Provides the [CameraDataSource] singleton.
-///
-/// Copied from [cameraDataSource].
-@ProviderFor(cameraDataSource)
-final cameraDataSourceProvider = AutoDisposeProvider<CameraDataSource>.internal(
-  cameraDataSource,
-  name: r'cameraDataSourceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$cameraDataSourceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CameraDataSourceRef = AutoDisposeProviderRef<CameraDataSource>;
-String _$cameraNotifierHash() => r'8bee28c132b58d6c6eefb490ea380ab714b6ce50';
+String _$cameraNotifierHash() => r'b5929371e5a745c66a153839ab24afd6024c260a';
 
 /// Manages camera lifecycle, face detection, and capture flow.
 ///

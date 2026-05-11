@@ -34,9 +34,12 @@ void main() {
     test('nextPage does not exceed max page', () {
       final notifier =
           container.read(onboardingNotifierProvider.notifier);
-      notifier.goToPage(3);
+      notifier.goToPage(kOnboardingPageCount - 1);
       notifier.nextPage();
-      expect(container.read(onboardingNotifierProvider).currentPage, 3);
+      expect(
+        container.read(onboardingNotifierProvider).currentPage,
+        kOnboardingPageCount - 1,
+      );
     });
 
     test('goToPage sets specific page', () {
@@ -86,31 +89,32 @@ void main() {
       expect(state.canProceed, true);
     });
 
-    test('page 1 requires skin type', () {
-      const stateNo = OnboardingState(currentPage: 1);
+    test('skin-type page (4) requires skin type', () {
+      const stateNo = OnboardingState(currentPage: 4);
       expect(stateNo.canProceed, false);
 
       const stateYes = OnboardingState(
-        currentPage: 1,
+        currentPage: 4,
         selectedSkinType: SkinType.dry,
       );
       expect(stateYes.canProceed, true);
     });
 
-    test('page 2 requires at least one concern', () {
-      const stateNo = OnboardingState(currentPage: 2);
+    test('concerns page (5) requires at least one concern', () {
+      const stateNo = OnboardingState(currentPage: 5);
       expect(stateNo.canProceed, false);
 
       const stateYes = OnboardingState(
-        currentPage: 2,
+        currentPage: 5,
         selectedConcerns: {SkinConcern.spots},
       );
       expect(stateYes.canProceed, true);
     });
 
-    test('page 3 always true', () {
-      const state = OnboardingState(currentPage: 3);
-      expect(state.canProceed, true);
+    test('intro pages (1, 2, 3) always true', () {
+      for (final page in [1, 2, 3]) {
+        expect(OnboardingState(currentPage: page).canProceed, true);
+      }
     });
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -38,7 +39,7 @@ class DailyRoutineCard extends StatelessWidget {
     final completedSteps =
         routine.steps.where((s) => s.isCompleted).length;
     final progress = totalSteps > 0 ? completedSteps / totalSteps : 0.0;
-    final label = currentType == 'morning' ? 'Sabah Rutini' : 'Aksam Rutini';
+    final label = currentType == 'morning' ? context.l10n.morningRoutineLabel : context.l10n.eveningRoutineLabel;
 
     return AppCard(
       onTap: onTap,
@@ -127,7 +128,7 @@ class DailyRoutineCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                '+${totalSteps - 3} adim daha',
+                context.l10n.moreSteps(totalSteps - 3),
                 style: AppTextStyles.labelSmall.copyWith(
                   color: AppColors.primary,
                 ),

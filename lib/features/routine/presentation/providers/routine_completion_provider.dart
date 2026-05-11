@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/services/notification_scheduler.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../gamification/presentation/providers/badge_provider.dart';
 import '../../domain/entities/streak_entity.dart';
 import 'routine_provider.dart';
 
@@ -65,7 +67,19 @@ class StreakNotifier extends _$StreakNotifier {
         completedSteps: completedSteps,
       );
 
-      return repo.getStreak(userId);
+      final streak = await repo.getStreak(userId);
+      // Check for streak milestone notifications
+      await NotificationScheduler.checkStreakMilestone(
+        streak.currentStreak,
+      );
+      // Check for badge unlocks
+      await ref.read(badgeNotifierProvider.notifier).checkAndUnlock(
+            currentStreak: streak.currentStreak,
+            totalAnalyses: 0,
+            hasRoutine: true,
+            currentScore: 0,
+          );
+      return streak;
     });
   }
 

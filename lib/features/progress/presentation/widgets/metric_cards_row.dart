@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../domain/entities/progress_summary_entity.dart';
 import 'metric_card.dart';
 
@@ -14,11 +15,11 @@ class MetricCardsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        MetricCard.score(summary.currentScore),
+        MetricCard.score(summary.currentScore, label: context.l10n.scoreLabel),
         const SizedBox(width: 12),
-        MetricCard.skinAge(summary.skinAge),
+        MetricCard.skinAge(summary.skinAge, label: context.l10n.skinAgeLabel),
         const SizedBox(width: 12),
-        MetricCard.totalAnalyses(summary.totalAnalyses),
+        MetricCard.totalAnalyses(summary.totalAnalyses, label: context.l10n.analysisCountLabel),
       ],
     );
   }

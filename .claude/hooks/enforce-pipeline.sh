@@ -1,48 +1,55 @@
 #!/bin/bash
-# Stop hook: feature pipeline'ın ortasında durmasını engeller.
-# Kontrol: Son 2 saatte plan dosyası oluşturulmuş ama
-# aynı FEATURE_ID ile review dosyası yoksa → block.
+# Stop hook: blocks the agent from stopping mid-feature-pipeline.
+# Rule: if a plan file exists in docs/plans/ that was modified in the last 2 hours,
+# there must be a matching review file in docs/reviews/ (and the review must be
+# at least as new as the plan). Otherwise → block.
+#
+# Pure bash. No Python. macOS + Linux compatible.
+
+set -u
 
 PLAN_DIR="docs/plans"
 REVIEW_DIR="docs/reviews"
 
-# Son 2 saat içinde değişen plan dosyalarını bul
-RECENT_PLAN=""
-if [ -d "$PLAN_DIR" ]; then
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    RECENT_PLAN=$(find "$PLAN_DIR" -name "*-plan.md" -mmin -120 -print -quit 2>/dev/null)
-  else
-    RECENT_PLAN=$(find "$PLAN_DIR" -name "*-plan.md" -mmin -120 -print -quit 2>/dev/null)
-  fi
+# Read stdin (we don't need it, but consume to avoid SIGPIPE upstream).
+cat >/dev/null 2>&1 || true
+
+# No plan dir → nothing to enforce.
+if [ ! -d "$PLAN_DIR" ]; then
+  printf '{"decision":"approve"}\n'
+  exit 0
 fi
 
-if [ -n "$RECENT_PLAN" ]; then
-  # Plan dosya adından FEATURE_ID çıkar
-  BASENAME=$(basename "$RECENT_PLAN")
-  FEATURE_ID="${BASENAME%-plan.md}"
+# Find the most recently modified plan file within the last 120 minutes.
+RECENT_PLAN=$(find "$PLAN_DIR" -type f -name "*-plan.md" -mmin -120 2>/dev/null | head -n 1)
 
-  # Aynı ID ile review dosyası var mı?
-  REVIEW_FILE="$REVIEW_DIR/${FEATURE_ID}-review.md"
-
-  if [ ! -f "$REVIEW_FILE" ]; then
-    echo '{"decision":"block","reason":"Feature pipeline incomplete. Plan exists but review missing. Continue: implement → test → review → commit → push → PR."}'
-    exit 0
-  fi
-
-  # Review var ama plan'dan eski mi?
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    PT=$(stat -f %m "$RECENT_PLAN" 2>/dev/null || echo 0)
-    RT=$(stat -f %m "$REVIEW_FILE" 2>/dev/null || echo 0)
-  else
-    PT=$(stat -c %Y "$RECENT_PLAN" 2>/dev/null || echo 0)
-    RT=$(stat -c %Y "$REVIEW_FILE" 2>/dev/null || echo 0)
-  fi
-
-  if [ "$RT" -lt "$PT" ]; then
-    echo '{"decision":"block","reason":"Review is older than plan. Complete the current feature pipeline first."}'
-    exit 0
-  fi
+if [ -z "$RECENT_PLAN" ]; then
+  printf '{"decision":"approve"}\n'
+  exit 0
 fi
 
-echo '{"decision":"approve"}'
+BASENAME=$(basename "$RECENT_PLAN")
+FEATURE_ID="${BASENAME%-plan.md}"
+REVIEW_FILE="${REVIEW_DIR}/${FEATURE_ID}-review.md"
+
+if [ ! -f "$REVIEW_FILE" ]; then
+  printf '{"decision":"block","reason":"Feature pipeline incomplete for %s. Plan exists but review missing. Continue: implement \\u2192 test \\u2192 review \\u2192 commit \\u2192 push \\u2192 PR."}\n' "$FEATURE_ID"
+  exit 0
+fi
+
+# Compare modification times — review must be newer than plan.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  PT=$(stat -f %m "$RECENT_PLAN" 2>/dev/null || echo 0)
+  RT=$(stat -f %m "$REVIEW_FILE" 2>/dev/null || echo 0)
+else
+  PT=$(stat -c %Y "$RECENT_PLAN" 2>/dev/null || echo 0)
+  RT=$(stat -c %Y "$REVIEW_FILE" 2>/dev/null || echo 0)
+fi
+
+if [ "$RT" -lt "$PT" ]; then
+  printf '{"decision":"block","reason":"Review file for %s is older than its plan. Re-run review and update before stopping."}\n' "$FEATURE_ID"
+  exit 0
+fi
+
+printf '{"decision":"approve"}\n'
 exit 0

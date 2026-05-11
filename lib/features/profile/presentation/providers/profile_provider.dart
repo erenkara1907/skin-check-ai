@@ -38,6 +38,15 @@ Future<DateTime?> joinDate(Ref ref) async {
   return repo.getJoinDate(user.id);
 }
 
+/// Authentication provider for the current session
+/// (`email`, `google`, `apple`). Used to hide the "Change Password"
+/// entry for OAuth users who never set a password.
+@riverpod
+String? currentAuthProvider(Ref ref) {
+  ref.watch(authNotifierProvider);
+  return ref.read(authRepositoryProvider).authProvider;
+}
+
 /// Manages profile update operations.
 @riverpod
 class ProfileActions extends _$ProfileActions {
@@ -81,6 +90,22 @@ class ProfileActions extends _$ProfileActions {
     state = await AsyncValue.guard(() async {
       final repo = ref.read(profileRepositoryProvider);
       await repo.deleteAccount(user.id);
+    });
+    return !state.hasError;
+  }
+
+  /// Changes the user's password (requires current password).
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final authRepo = ref.read(authRepositoryProvider);
+      await authRepo.updatePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
     });
     return !state.hasError;
   }

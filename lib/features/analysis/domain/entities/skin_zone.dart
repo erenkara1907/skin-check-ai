@@ -13,7 +13,7 @@ enum SkinZone {
   /// Database / API value.
   final String value;
 
-  /// Turkish display label.
+  /// Default display label (Turkish fallback).
   final String label;
 
   /// Parse from API/DB string value.

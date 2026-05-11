@@ -24,7 +24,7 @@ void main() {
                   'id': 'r1',
                   'user_id': 'u1',
                   'type': 'morning',
-                  'steps': [
+                  'steps_json': [
                     {
                       'step': 'Cleanse',
                       'product_type': 'cleanser',

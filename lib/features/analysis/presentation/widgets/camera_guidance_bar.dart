@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
-/// Displays face detection and lighting guidance messages.
+/// Quiet one-line guidance — a whisper, not a system readout.
+///
+/// Simple glass pill with a small icon and a sentence. Accent shifts to
+/// brand teal when the face is detected; otherwise soft white.
 class CameraGuidanceBar extends StatelessWidget {
   const CameraGuidanceBar({
     super.key,
@@ -14,45 +20,48 @@ class CameraGuidanceBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = faceDetected ? AppColors.secondary : Colors.white;
     final message = faceDetected
-        ? 'Harika! Çekim için hazırsınız'
-        : 'Yüzünüzü çerçeveye hizalayın';
+        ? 'Harika. Sabit kalın.'
+        : 'Yüzünüzü ovale hizalayın';
+    final icon =
+        faceDetected ? LucideIcons.check : LucideIcons.scanFace;
 
-    final icon = faceDetected ? Icons.check_circle : Icons.face;
-    final color = faceDetected
-        ? const Color(0xFF00D9A6)
-        : Colors.white.withValues(alpha: 0.8);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 32),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              message,
-              style: AppTextStyles.bodySmall.copyWith(color: color),
-              textAlign: TextAlign.center,
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.22),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: accent.withValues(alpha: faceDetected ? 0.4 : 0.14),
+                width: 0.7,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: accent, size: 15),
+                const SizedBox(width: 8),
+                Text(
+                  message,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
-    )
-        .animate(target: faceDetected ? 1 : 0)
-        .shimmer(
-          duration: 600.ms,
-          color: const Color(0xFF00D9A6).withValues(alpha: 0.3),
-        );
+    );
   }
 }

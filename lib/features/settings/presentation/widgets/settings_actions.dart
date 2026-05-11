@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/utils/logger.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 import 'delete_account_dialog.dart';
 
@@ -22,19 +24,28 @@ Future<TimeOfDay?> pickReminderTime(
 /// Exports all user data as JSON and shares it.
 Future<void> exportUserData(BuildContext context, WidgetRef ref) async {
   final messenger = ScaffoldMessenger.of(context);
+  final preparingMsg = context.l10n.preparingData;
+  final failedMsg = context.l10n.dataExportFailed;
   messenger.showSnackBar(
-    const SnackBar(content: Text('Veriler hazirlaniyor...')),
+    SnackBar(content: Text(preparingMsg)),
   );
 
-  final actions = ref.read(profileActionsProvider.notifier);
-  final data = await actions.exportData();
+  try {
+    final actions = ref.read(profileActionsProvider.notifier);
+    final data = await actions.exportData();
 
-  if (data != null) {
-    final json = const JsonEncoder.withIndent('  ').convert(data);
-    await Share.share(json, subject: 'SkinCheck AI - Verilerim');
-  } else {
+    if (data != null) {
+      final json = const JsonEncoder.withIndent('  ').convert(data);
+      await Share.share(json, subject: 'SkinCheck AI - Verilerim');
+    } else {
+      messenger.showSnackBar(
+        SnackBar(content: Text(failedMsg)),
+      );
+    }
+  } catch (e, st) {
+    log.e('Export user data failed', e, st);
     messenger.showSnackBar(
-      const SnackBar(content: Text('Veriler disa aktarilamadi')),
+      SnackBar(content: Text(failedMsg)),
     );
   }
 }
@@ -44,22 +55,37 @@ Future<void> deleteUserAccount(
   BuildContext context,
   WidgetRef ref,
 ) async {
+  final deletingMsg = context.l10n.deletingAccount;
+  final failedMsg = context.l10n.accountDeletionFailed;
+
   final confirmed = await DeleteAccountDialog.show(context);
   if (!confirmed) return;
 
   if (!context.mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Hesap siliniyor...')),
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.showSnackBar(
+    SnackBar(content: Text(deletingMsg)),
   );
 
-  final actions = ref.read(profileActionsProvider.notifier);
-  await actions.deleteAccount();
+  try {
+    final actions = ref.read(profileActionsProvider.notifier);
+    await actions.deleteAccount();
+  } catch (e, st) {
+    log.e('Delete account failed', e, st);
+    messenger.showSnackBar(
+      SnackBar(content: Text(failedMsg)),
+    );
+  }
 }
 
 /// Opens a URL in the external browser.
 Future<void> openExternalUrl(String url) async {
-  final uri = Uri.parse(url);
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  try {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  } catch (e, st) {
+    log.e('Failed to open URL: $url', e, st);
   }
 }

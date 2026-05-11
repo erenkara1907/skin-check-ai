@@ -1,21 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skincheck_ai/features/auth/domain/entities/user_entity.dart';
 import 'package:skincheck_ai/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skincheck_ai/features/auth/presentation/screens/sign_up_screen.dart';
 import 'package:skincheck_ai/features/auth/presentation/widgets/auth_text_field.dart';
 
+import '../../../../helpers/test_app.dart';
+
 Widget _buildTestApp() {
-  return ProviderScope(
+  return pumpableTestApp(
+    const SignUpScreen(),
     overrides: [
       authNotifierProvider.overrideWith(() => _FakeAuthNotifier()),
     ],
-    child: const MaterialApp(
-      home: SignUpScreen(),
-    ),
   );
 }
 

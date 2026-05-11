@@ -28,30 +28,30 @@ class MetricCard extends StatelessWidget {
   final Color? valueColor;
 
   /// Creates a score variant.
-  factory MetricCard.score(double score) {
+  factory MetricCard.score(double score, {required String label}) {
     return MetricCard(
       icon: LucideIcons.target,
       value: score.toStringAsFixed(0),
-      label: 'Skor',
+      label: label,
       valueColor: AppColors.scoreColor(score),
     );
   }
 
   /// Creates a skin age variant.
-  factory MetricCard.skinAge(int age) {
+  factory MetricCard.skinAge(int age, {required String label}) {
     return MetricCard(
       icon: LucideIcons.clock,
       value: '$age',
-      label: 'Cilt Yasi',
+      label: label,
     );
   }
 
   /// Creates a total analyses variant.
-  factory MetricCard.totalAnalyses(int count) {
+  factory MetricCard.totalAnalyses(int count, {required String label}) {
     return MetricCard(
       icon: LucideIcons.barChart3,
       value: '$count',
-      label: 'Analiz',
+      label: label,
     );
   }
 

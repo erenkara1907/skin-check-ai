@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -31,7 +32,7 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final dateFormat = DateFormat('dd MMM yyyy');
+    final dateFormat = DateFormat('dd MMM yyyy', 'tr');
 
     return AppCard(
       padding: EdgeInsets.zero,
@@ -41,7 +42,7 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
             child: Text(
-              'Degisim Karsilastirmasi',
+              context.l10n.comparisonTitle,
               style: AppTextStyles.titleLarge,
             ),
           ),
@@ -66,20 +67,24 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
                     child: Stack(
                       children: [
                         // Latest (right / full background)
-                        _buildImage(
-                          c.latestPhotoUrl!,
-                          width,
-                          height,
+                        RepaintBoundary(
+                          child: _buildImage(
+                            c.latestPhotoUrl!,
+                            width,
+                            height,
+                          ),
                         ),
                         // First (left / clipped)
                         ClipRect(
                           clipper: _LeftClipper(
                             _sliderPosition * width,
                           ),
-                          child: _buildImage(
-                            c.firstPhotoUrl!,
-                            width,
-                            height,
+                          child: RepaintBoundary(
+                            child: _buildImage(
+                              c.firstPhotoUrl!,
+                              width,
+                              height,
+                            ),
                           ),
                         ),
                         // Divider line
@@ -130,7 +135,7 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
             child: Row(
               children: [
                 _buildLabel(
-                  'Once',
+                  context.l10n.beforeLabel,
                   c.firstDate != null
                       ? dateFormat.format(c.firstDate!)
                       : '-',
@@ -139,7 +144,7 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
                 ),
                 const Spacer(),
                 _buildLabel(
-                  'Sonra',
+                  context.l10n.afterLabel,
                   c.latestDate != null
                       ? dateFormat.format(c.latestDate!)
                       : '-',
@@ -195,7 +200,7 @@ class _PhotoComparisonSliderState extends State<PhotoComparisonSlider> {
         const SizedBox(height: 2),
         Text(date, style: AppTextStyles.bodySmall),
         Text(
-          'Skor: ${score.toStringAsFixed(0)}',
+          context.l10n.scoreDisplay(score.toStringAsFixed(0)),
           style: AppTextStyles.titleSmall.copyWith(
             color: AppColors.scoreColor(score),
           ),

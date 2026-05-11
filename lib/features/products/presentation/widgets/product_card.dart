@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/logger.dart';
@@ -188,7 +189,7 @@ class _BuyButton extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        child: const Text('Satın Al'),
+        child: Text(context.l10n.buyButton),
       ),
     );
   }

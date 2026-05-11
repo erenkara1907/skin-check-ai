@@ -19,7 +19,16 @@ class CameraDataSource {
 
   /// Initialize the front camera.
   Future<CameraController> initialize() async {
+    // Dispose previous controller if re-initializing
+    if (_controller != null) {
+      await _controller!.dispose();
+      _controller = null;
+    }
+
     final cameras = await availableCameras();
+    if (cameras.isEmpty) {
+      throw StateError('No cameras available on this device');
+    }
     final front = cameras.firstWhere(
       (c) => c.lensDirection == CameraLensDirection.front,
       orElse: () => cameras.first,
@@ -27,9 +36,9 @@ class CameraDataSource {
 
     _controller = CameraController(
       front,
-      ResolutionPreset.high,
+      ResolutionPreset.medium,
       enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg,
+      imageFormatGroup: ImageFormatGroup.bgra8888,
     );
 
     await _controller!.initialize();
@@ -40,6 +49,7 @@ class CameraDataSource {
         performanceMode: FaceDetectorMode.fast,
         enableLandmarks: false,
         enableClassification: false,
+        minFaceSize: 0.25,
       ),
     );
 
@@ -68,7 +78,13 @@ class CameraDataSource {
     );
 
     final faces = await _faceDetector!.processImage(inputImage);
-    return faces.length;
+    // Filter out tiny false-positive detections
+    final imageArea = image.width * image.height;
+    final validFaces = faces.where((face) {
+      final faceArea = face.boundingBox.width * face.boundingBox.height;
+      return faceArea / imageArea > 0.05;
+    }).toList();
+    return validFaces.length;
   }
 
   /// Capture a photo and return the bytes.

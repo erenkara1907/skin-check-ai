@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 /// Greeting header: "Merhaba, [name]!" + formatted date.
@@ -13,14 +14,14 @@ class GreetingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayName = (name != null && name!.isNotEmpty) ? name! : 'Kullanici';
-    final dateStr = DateFormat('d MMMM yyyy, EEEE').format(DateTime.now());
+    final displayName = (name != null && name!.isNotEmpty) ? name! : context.l10n.defaultUserName;
+    final dateStr = DateFormat('d MMMM yyyy, EEEE', 'tr').format(DateTime.now());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Merhaba, $displayName!',
+          context.l10n.greetingMessage(displayName),
           style: AppTextStyles.headlineLarge.copyWith(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w800,

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 
-/// Full-screen gradient background wrapper.
+/// Full-screen gradient background wrapper with optional ambient orbs.
 class GradientBackground extends StatelessWidget {
-  const GradientBackground({super.key, required this.child});
+  const GradientBackground({
+    super.key,
+    required this.child,
+  });
 
   /// The widget below this in the tree.
   final Widget child;

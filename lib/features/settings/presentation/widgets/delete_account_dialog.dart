@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -50,15 +51,14 @@ class DeleteAccountDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Hesabini Sil',
+              context.l10n.deleteAccountTitle,
               style: AppTextStyles.headlineMedium.copyWith(
                 color: textColor,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Bu islem geri alinamaz. Tum verilerin, analizlerin '
-              've fotograflarin kalici olarak silinecek.',
+              context.l10n.deleteAccountWarning,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: subtextColor,
@@ -79,7 +79,7 @@ class DeleteAccountDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Evet, Hesabimi Sil',
+                  context.l10n.deleteAccountConfirm,
                   style: AppTextStyles.labelLarge.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -100,7 +100,7 @@ class DeleteAccountDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Vazgec',
+                  context.l10n.cancelAction,
                   style: AppTextStyles.labelLarge.copyWith(
                     color: textColor,
                     fontWeight: FontWeight.w700,

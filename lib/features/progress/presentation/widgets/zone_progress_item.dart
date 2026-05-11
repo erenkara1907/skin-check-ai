@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/entities/zone_progress_entity.dart';
@@ -11,6 +12,19 @@ class ZoneProgressItem extends StatelessWidget {
 
   /// Zone progress data.
   final ZoneProgressEntity zone;
+
+  String _translateZone(BuildContext context, String zone) {
+    final map = {
+      'forehead': context.l10n.zoneForehead,
+      'left_cheek': context.l10n.zoneLeftCheek,
+      'right_cheek': context.l10n.zoneRightCheek,
+      'nose': context.l10n.zoneNose,
+      'chin': context.l10n.zoneChin,
+      'under_eyes': context.l10n.zoneUnderEyes,
+      'jawline': context.l10n.zoneJawline,
+    };
+    return map[zone] ?? zone;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +45,7 @@ class ZoneProgressItem extends StatelessWidget {
           SizedBox(
             width: 80,
             child: Text(
-              zone.zoneName,
+              _translateZone(context, zone.zone),
               style: AppTextStyles.bodySmall.copyWith(
                 color: isDark
                     ? AppColors.textPrimaryDark

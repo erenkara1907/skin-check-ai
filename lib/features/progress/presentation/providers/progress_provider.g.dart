@@ -687,5 +687,165 @@ class _PhotoComparisonNotifierProviderElement
   String get userId => (origin as PhotoComparisonNotifierProvider).userId;
 }
 
+String _$concernTimelineNotifierHash() =>
+    r'c7f09a44f7e824f405e782cc4e2164b71215f494';
+
+abstract class _$ConcernTimelineNotifier
+    extends BuildlessAutoDisposeAsyncNotifier<List<ConcernTimelineEntity>> {
+  late final String userId;
+
+  FutureOr<List<ConcernTimelineEntity>> build(String userId);
+}
+
+/// Loads concern severity timeline across all analyses.
+///
+/// Copied from [ConcernTimelineNotifier].
+@ProviderFor(ConcernTimelineNotifier)
+const concernTimelineNotifierProvider = ConcernTimelineNotifierFamily();
+
+/// Loads concern severity timeline across all analyses.
+///
+/// Copied from [ConcernTimelineNotifier].
+class ConcernTimelineNotifierFamily
+    extends Family<AsyncValue<List<ConcernTimelineEntity>>> {
+  /// Loads concern severity timeline across all analyses.
+  ///
+  /// Copied from [ConcernTimelineNotifier].
+  const ConcernTimelineNotifierFamily();
+
+  /// Loads concern severity timeline across all analyses.
+  ///
+  /// Copied from [ConcernTimelineNotifier].
+  ConcernTimelineNotifierProvider call(String userId) {
+    return ConcernTimelineNotifierProvider(userId);
+  }
+
+  @override
+  ConcernTimelineNotifierProvider getProviderOverride(
+    covariant ConcernTimelineNotifierProvider provider,
+  ) {
+    return call(provider.userId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'concernTimelineNotifierProvider';
+}
+
+/// Loads concern severity timeline across all analyses.
+///
+/// Copied from [ConcernTimelineNotifier].
+class ConcernTimelineNotifierProvider
+    extends
+        AutoDisposeAsyncNotifierProviderImpl<
+          ConcernTimelineNotifier,
+          List<ConcernTimelineEntity>
+        > {
+  /// Loads concern severity timeline across all analyses.
+  ///
+  /// Copied from [ConcernTimelineNotifier].
+  ConcernTimelineNotifierProvider(String userId)
+    : this._internal(
+        () => ConcernTimelineNotifier()..userId = userId,
+        from: concernTimelineNotifierProvider,
+        name: r'concernTimelineNotifierProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$concernTimelineNotifierHash,
+        dependencies: ConcernTimelineNotifierFamily._dependencies,
+        allTransitiveDependencies:
+            ConcernTimelineNotifierFamily._allTransitiveDependencies,
+        userId: userId,
+      );
+
+  ConcernTimelineNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+  }) : super.internal();
+
+  final String userId;
+
+  @override
+  FutureOr<List<ConcernTimelineEntity>> runNotifierBuild(
+    covariant ConcernTimelineNotifier notifier,
+  ) {
+    return notifier.build(userId);
+  }
+
+  @override
+  Override overrideWith(ConcernTimelineNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: ConcernTimelineNotifierProvider._internal(
+        () => create()..userId = userId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<
+    ConcernTimelineNotifier,
+    List<ConcernTimelineEntity>
+  >
+  createElement() {
+    return _ConcernTimelineNotifierProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ConcernTimelineNotifierProvider && other.userId == userId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin ConcernTimelineNotifierRef
+    on AutoDisposeAsyncNotifierProviderRef<List<ConcernTimelineEntity>> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _ConcernTimelineNotifierProviderElement
+    extends
+        AutoDisposeAsyncNotifierProviderElement<
+          ConcernTimelineNotifier,
+          List<ConcernTimelineEntity>
+        >
+    with ConcernTimelineNotifierRef {
+  _ConcernTimelineNotifierProviderElement(super.provider);
+
+  @override
+  String get userId => (origin as ConcernTimelineNotifierProvider).userId;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

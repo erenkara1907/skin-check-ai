@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -64,7 +65,7 @@ class LandingHeroSection extends StatelessWidget {
             colors: [AppColors.primary, AppColors.secondary],
           ).createShader(bounds),
           child: Text(
-            'Cildini AI ile\nAnaliz Et',
+            context.l10n.landingHeroTitle,
             style: AppTextStyles.displayLarge.copyWith(
               fontSize: 48,
               color: Colors.white,
@@ -77,8 +78,7 @@ class LandingHeroSection extends StatelessWidget {
             .slideX(begin: -0.1, end: 0),
         const SizedBox(height: 16),
         Text(
-          'Yapay zekâ destekli cilt analizi ile cildin hakkında '
-          'detaylı bilgi al, kişisel bakım rutini oluştur.',
+          context.l10n.landingHeroDescription,
           style: AppTextStyles.bodyLarge.copyWith(
             color: isDark
                 ? AppColors.textSecondaryDark
@@ -92,18 +92,18 @@ class LandingHeroSection extends StatelessWidget {
           runSpacing: 12,
           children: [
             _CtaButton(
-              label: 'Hemen Başla',
+              label: context.l10n.getStartedButton,
               onPressed: () {},
             ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
             if (kIsWeb) ...[
               _StoreBadge(
                 icon: LucideIcons.apple,
-                label: 'App Store',
+                label: context.l10n.appStoreBadge,
                 isDark: isDark,
               ).animate().fadeIn(delay: 500.ms, duration: 600.ms),
               _StoreBadge(
                 icon: LucideIcons.playCircle,
-                label: 'Google Play',
+                label: context.l10n.googlePlayBadge,
                 isDark: isDark,
               ).animate().fadeIn(delay: 600.ms, duration: 600.ms),
             ],

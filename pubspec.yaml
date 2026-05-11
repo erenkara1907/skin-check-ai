@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # State Management
   flutter_riverpod: ^2.6.1
@@ -42,6 +44,7 @@ dependencies:
   lucide_icons: ^0.257.0
   google_fonts: ^6.2.1
   confetti: ^0.8.0
+  lottie: ^3.3.1
 
   # Notifications
   flutter_local_notifications: ^19.0.0
@@ -67,16 +70,30 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^5.0.0
   riverpod_generator: ^2.6.4
   build_runner: ^2.4.14
   freezed: ^2.5.8
   json_serializable: ^6.9.4
   mocktail: ^1.0.4
+  patrol: ^4.3.1
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.5
 
+patrol:
+  app_name: SkinCheck AI
+  test_directory: integration_test
+  ios:
+    bundle_id: com.skincheck.skincheckAi
+    xcodebuild_args:
+      - -allowProvisioningUpdates
+  android:
+    package_name: com.skincheck.skincheckAi
+
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - .env

@@ -189,7 +189,7 @@ class _RoutineCompletionNotifierProviderElement
       (origin as RoutineCompletionNotifierProvider).routineId;
 }
 
-String _$streakNotifierHash() => r'a5ead28b4686a0c8801117f5425450b260a27a5d';
+String _$streakNotifierHash() => r'f1befb99b0284c7375639a698509051c8cc19bb1';
 
 abstract class _$StreakNotifier
     extends BuildlessAutoDisposeAsyncNotifier<StreakEntity> {

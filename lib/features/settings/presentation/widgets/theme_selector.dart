@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -29,7 +30,7 @@ class ThemeSelector extends StatelessWidget {
       children: [
         _ThemeOption(
           icon: LucideIcons.smartphone,
-          label: 'Sistem',
+          label: context.l10n.systemTheme,
           isSelected: currentMode == ThemeMode.system,
           onTap: () => onChanged(ThemeMode.system),
           textColor: textColor,
@@ -38,7 +39,7 @@ class ThemeSelector extends StatelessWidget {
         ),
         _ThemeOption(
           icon: LucideIcons.sun,
-          label: 'Acik',
+          label: context.l10n.lightTheme,
           isSelected: currentMode == ThemeMode.light,
           onTap: () => onChanged(ThemeMode.light),
           textColor: textColor,
@@ -47,7 +48,7 @@ class ThemeSelector extends StatelessWidget {
         ),
         _ThemeOption(
           icon: LucideIcons.moon,
-          label: 'Koyu',
+          label: context.l10n.darkTheme,
           isSelected: currentMode == ThemeMode.dark,
           onTap: () => onChanged(ThemeMode.dark),
           textColor: textColor,

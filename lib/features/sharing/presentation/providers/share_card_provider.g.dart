@@ -6,7 +6,7 @@ part of 'share_card_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$shareCardNotifierHash() => r'e713f7acff88d898a079b4e1b244433ec2295b08';
+String _$shareCardNotifierHash() => r'2f5226c9c5d7ff94dd44ab1e1e1f5b8375f4c875';
 
 /// Captures a RepaintBoundary widget as an image and shares it.
 ///

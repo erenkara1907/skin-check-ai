@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/skin_zone.dart';
 import '../../domain/entities/zone_score_entity.dart';
 
-/// Interactive face silhouette with 7 tappable zones.
+/// Interactive face silhouette with 7 tappable zones and staggered entry.
 class FaceZoneMap extends StatelessWidget {
   const FaceZoneMap({
     super.key,
@@ -40,11 +41,14 @@ class FaceZoneMap extends StatelessWidget {
       'jawline': _ZonePosition(0.5, 0.65, 130, 36),
     };
 
+    int index = 0;
     return zones.map((zone) {
       final pos = zonePositions[zone.zone];
       if (pos == null) return const SizedBox.shrink();
 
       final color = AppColors.scoreColor(zone.score);
+      final delay = (index * 100).ms;
+      index++;
 
       return Positioned(
         left: (280 * pos.cx) - (pos.w / 2),
@@ -72,7 +76,16 @@ class FaceZoneMap extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          )
+              .animate()
+              .fadeIn(delay: delay, duration: 300.ms)
+              .scale(
+                delay: delay,
+                begin: const Offset(0.8, 0.8),
+                end: const Offset(1.0, 1.0),
+                duration: 300.ms,
+                curve: Curves.easeOutBack,
+              ),
         ),
       );
     }).toList();
@@ -95,27 +108,32 @@ class _FaceSilhouettePainter extends CustomPainter {
     final h = size.height;
     final cx = w / 2;
 
-    final paint = Paint()
-      ..color = brightness == Brightness.dark
-          ? Colors.white.withValues(alpha: 0.08)
-          : Colors.black.withValues(alpha: 0.05)
+    // Gradient fill for premium feel
+    final fillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          AppColors.primary.withValues(alpha: 0.03),
+          AppColors.secondary.withValues(alpha: 0.03),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, w, h))
       ..style = PaintingStyle.fill;
 
     final borderPaint = Paint()
       ..color = brightness == Brightness.dark
-          ? Colors.white.withValues(alpha: 0.15)
-          : Colors.black.withValues(alpha: 0.1)
+          ? Colors.white.withValues(alpha: 0.12)
+          : Colors.black.withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
-    // Face oval
     final faceRect = Rect.fromCenter(
       center: Offset(cx, h * 0.45),
       width: w * 0.72,
       height: h * 0.85,
     );
 
-    canvas.drawOval(faceRect, paint);
+    canvas.drawOval(faceRect, fillPaint);
     canvas.drawOval(faceRect, borderPaint);
   }
 

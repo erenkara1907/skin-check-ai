@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../products/presentation/providers/product_provider.dart';
@@ -31,7 +32,45 @@ class RecommendedProductsSection extends ConsumerWidget {
       error: (_, __) => const SizedBox.shrink(),
       data: (grouped) {
         final allProducts = grouped.values.expand((list) => list).toList();
-        if (allProducts.isEmpty) return const SizedBox.shrink();
+        if (allProducts.isEmpty) {
+          final isDark =
+              Theme.of(context).brightness == Brightness.dark;
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.glassDark
+                  : AppColors.glassLight,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? AppColors.glassBorderDark
+                    : AppColors.glassBorderLight,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  LucideIcons.sparkles,
+                  size: 32,
+                  color: AppColors.secondary,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  context.l10n.productsComingSoon,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.6),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
 
         // Show max 6 products
         final displayProducts = allProducts.take(6).toList();
@@ -50,7 +89,7 @@ class RecommendedProductsSection extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Önerilen Ürünler',
+                    context.l10n.recommendedProductsTitle,
                     style: AppTextStyles.titleLarge.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
@@ -62,7 +101,7 @@ class RecommendedProductsSection extends ConsumerWidget {
                     '/products?concerns=${concerns.join(",")}',
                   ),
                   child: Text(
-                    'Tümünü Gör',
+                    context.l10n.viewAllButton,
                     style: AppTextStyles.labelMedium.copyWith(
                       color: AppColors.primary,
                     ),

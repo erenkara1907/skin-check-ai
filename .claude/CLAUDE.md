@@ -96,3 +96,31 @@ Each feature:
 - Widget: critical screens
 - Integration: main flows
 - Target: 70%+ coverage
+
+## Pipeline Commands
+- `/feature <desc>` — Full feature pipeline (plan → branch → implement → test → review → PR)
+- `/fix <desc>` — Quick bug fix on its own branch + PR
+- `/refactor <desc>` — Refactor with safety net of pre-existing tests + PR
+- `/deploy` — Deployment checklist (analyze, test, security, builds, store listing)
+- `/design-review` — Audit code against this design system; auto-fix safe drifts
+- `/status` — One-page project snapshot
+- `/security-scan` — Full client + Supabase security audit (OWASP M1–M10)
+
+## ECC Integration
+This project uses the Everything Claude Code (ECC) plugin and its common rules.
+- ECC common rules are loaded from `~/.claude/rules/common/` and cover code review, security review, testing, performance, git workflow, and patterns.
+- Slash commands above reference ECC agent perspectives (planner, code-reviewer, security-reviewer, tdd-guide, build-error-resolver, refactor-cleaner) as their mental model.
+- Other-language rules (`rust/`, `python/`, etc.) are intentionally NOT installed — only `common/`.
+
+## Quality Gates (every PR before merge)
+1. `flutter analyze` — 0 issues
+2. `flutter test` — all green
+3. Coverage ≥ 70%
+4. No hardcoded secrets; RLS active on all tables
+5. CLAUDE.md design system: colors / fonts / dark mode / touch targets / state coverage
+6. Every file ≤ 250 lines
+
+## Token Optimization
+- Default model: `sonnet`. Use `opus` only for non-trivial architecture decisions.
+- Run `/compact` after each completed feature.
+- Run `/clear` between unrelated tasks.

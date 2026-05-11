@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../core/extensions/l10n_extension.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../features/subscription/presentation/providers/subscription_provider.dart';
@@ -13,14 +14,14 @@ class PaywallGate extends ConsumerWidget {
   const PaywallGate({
     super.key,
     required this.child,
-    this.label = 'Pro ozelligi',
+    this.label,
   });
 
   /// The pro-only content.
   final Widget child;
 
-  /// Label shown on the lock overlay.
-  final String label;
+  /// Label shown on the lock overlay. Falls back to localized default.
+  final String? label;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,32 +39,35 @@ class PaywallGate extends ConsumerWidget {
           // Lock overlay
           Positioned.fill(
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(14),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        LucideIcons.lock,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
                     ),
-                    child: const Icon(
-                      LucideIcons.lock,
-                      color: AppColors.primary,
-                      size: 22,
+                    const SizedBox(height: 8),
+                    const ProBadge(size: ProBadgeSize.medium),
+                    const SizedBox(height: 4),
+                    Text(
+                      label ?? context.l10n.proFeature,
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const ProBadge(size: ProBadgeSize.medium),
-                  const SizedBox(height: 4),
-                  Text(
-                    label,
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

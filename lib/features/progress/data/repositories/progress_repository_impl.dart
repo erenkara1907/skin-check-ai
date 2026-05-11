@@ -1,5 +1,6 @@
 import '../../../analysis/domain/entities/skin_zone.dart';
 import '../../../../core/utils/logger.dart';
+import '../../domain/entities/concern_timeline_entity.dart';
 import '../../domain/entities/photo_comparison_entity.dart';
 import '../../domain/entities/progress_summary_entity.dart';
 import '../../domain/entities/score_trend_entity.dart';
@@ -118,6 +119,44 @@ class ProgressRepositoryImpl implements ProgressRepository {
       );
     } catch (e, st) {
       log.e('Failed to get photo comparison', e, st);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ConcernTimelineEntity>> getConcernTimeline(
+    String userId,
+  ) async {
+    try {
+      final analyses = await _dataSource.fetchAllAnalyses(userId);
+      final results = <ConcernTimelineEntity>[];
+
+      for (final analysis in analyses) {
+        final date = DateTime.parse(analysis['created_at'] as String);
+        final zones =
+            analysis['zone_scores'] as List<dynamic>? ?? [];
+
+        for (final z in zones) {
+          final zoneMap = z as Map<String, dynamic>;
+          final zone = zoneMap['zone'] as String;
+          final severity = (zoneMap['severity'] as num?)?.toInt() ?? 5;
+          final concerns =
+              (zoneMap['concerns'] as List<dynamic>?)?.cast<String>() ??
+                  [];
+
+          for (final concern in concerns) {
+            results.add(ConcernTimelineEntity(
+              date: date,
+              concern: concern,
+              severity: severity,
+              zone: zone,
+            ));
+          }
+        }
+      }
+      return results;
+    } catch (e, st) {
+      log.e('Failed to get concern timeline', e, st);
       rethrow;
     }
   }

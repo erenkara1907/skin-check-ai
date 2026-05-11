@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../data/datasources/progress_datasource.dart';
 import '../../data/repositories/progress_repository_impl.dart';
+import '../../domain/entities/concern_timeline_entity.dart';
 import '../../domain/entities/photo_comparison_entity.dart';
 import '../../domain/entities/progress_summary_entity.dart';
 import '../../domain/entities/score_trend_entity.dart';
@@ -68,5 +69,15 @@ class PhotoComparisonNotifier extends _$PhotoComparisonNotifier {
   FutureOr<PhotoComparisonEntity> build(String userId) async {
     final repo = ref.read(progressRepositoryProvider);
     return repo.getPhotoComparison(userId);
+  }
+}
+
+/// Loads concern severity timeline across all analyses.
+@riverpod
+class ConcernTimelineNotifier extends _$ConcernTimelineNotifier {
+  @override
+  FutureOr<List<ConcernTimelineEntity>> build(String userId) async {
+    final repo = ref.read(progressRepositoryProvider);
+    return repo.getConcernTimeline(userId);
   }
 }

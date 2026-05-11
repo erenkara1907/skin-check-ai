@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skincheck_ai/features/progress/domain/entities/progress_summary_entity.dart';
 import 'package:skincheck_ai/features/progress/domain/entities/score_trend_entity.dart';
@@ -9,6 +8,7 @@ import 'package:skincheck_ai/features/progress/presentation/widgets/progress_emp
 import 'package:skincheck_ai/features/progress/presentation/widgets/score_trend_chart.dart';
 import 'package:skincheck_ai/features/progress/presentation/widgets/zone_progress_item.dart';
 import 'package:skincheck_ai/features/progress/presentation/widgets/zone_progress_list.dart';
+import '../../../../helpers/test_app.dart';
 
 void main() {
   group('MetricCardsRow', () {
@@ -20,10 +20,8 @@ void main() {
       );
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: MetricCardsRow(summary: summary),
-          ),
+        pumpableTestApp(
+          const Scaffold(body: MetricCardsRow(summary: summary)),
         ),
       );
 
@@ -36,59 +34,38 @@ void main() {
   group('ProgressEmptyState', () {
     testWidgets('renders CTA button', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: ProviderScope(
-            child: const Scaffold(
-              body: ProgressEmptyState(),
-            ),
-          ),
-        ),
+        pumpableTestApp(const Scaffold(body: ProgressEmptyState())),
       );
 
       expect(find.text('Analiz Yap'), findsOneWidget);
-      expect(
-        find.text('Henuz ilerleme verisi yok'),
-        findsOneWidget,
-      );
+      expect(find.text('Henüz ilerleme verisi yok'), findsOneWidget);
     });
   });
 
   group('ScoreTrendChart', () {
     testWidgets('renders chart when data provided', (tester) async {
       final data = [
-        ScoreTrendEntity(
-          date: DateTime(2026, 3, 1),
-          score: 60,
-        ),
-        ScoreTrendEntity(
-          date: DateTime(2026, 4, 1),
-          score: 75,
-        ),
+        ScoreTrendEntity(date: DateTime(2026, 3, 1), score: 60),
+        ScoreTrendEntity(date: DateTime(2026, 4, 1), score: 75),
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: ScoreTrendChart(data: data),
-            ),
+        pumpableTestApp(
+          Scaffold(
+            body: SingleChildScrollView(child: ScoreTrendChart(data: data)),
           ),
         ),
       );
 
-      expect(find.text('Skor Trendi'), findsOneWidget);
+      expect(find.text('Skor'), findsOneWidget);
     });
 
     testWidgets('renders nothing with empty data', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ScoreTrendChart(data: []),
-          ),
-        ),
+        pumpableTestApp(const Scaffold(body: ScoreTrendChart(data: []))),
       );
 
-      expect(find.text('Skor Trendi'), findsNothing);
+      expect(find.text('Skor'), findsNothing);
     });
   });
 
@@ -112,27 +89,21 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: ZoneProgressList(zones: zones),
-            ),
+        pumpableTestApp(
+          Scaffold(
+            body: SingleChildScrollView(child: ZoneProgressList(zones: zones)),
           ),
         ),
       );
 
-      expect(find.text('Alin'), findsOneWidget);
+      expect(find.text('Alın'), findsOneWidget);
       expect(find.text('Burun'), findsOneWidget);
       expect(find.byType(ZoneProgressItem), findsNWidgets(2));
     });
 
     testWidgets('renders nothing with empty zones', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ZoneProgressList(zones: []),
-          ),
-        ),
+        pumpableTestApp(const Scaffold(body: ZoneProgressList(zones: []))),
       );
 
       expect(find.byType(ZoneProgressItem), findsNothing);

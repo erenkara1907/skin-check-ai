@@ -55,6 +55,10 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
 /// Whether the current user has an active Pro subscription.
 @riverpod
 bool isPro(Ref ref) {
+  // Bypass paywall in debug builds
+  if (const bool.fromEnvironment('dart.vm.product') == false) {
+    return true;
+  }
   final sub = ref.watch(subscriptionNotifierProvider);
   return sub.valueOrNull?.hasProEntitlement ?? false;
 }

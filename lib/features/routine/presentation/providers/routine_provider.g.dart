@@ -25,7 +25,7 @@ final routineRepositoryProvider = Provider<RoutineRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef RoutineRepositoryRef = ProviderRef<RoutineRepository>;
-String _$routineNotifierHash() => r'224853d30b0049d9caed39da284a12135ded5cf2';
+String _$routineNotifierHash() => r'eda77a5e215899d7be1600dd978e596915af33ce';
 
 /// Copied from Dart SDK
 class _SystemHash {

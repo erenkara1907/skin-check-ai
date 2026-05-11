@@ -93,6 +93,38 @@ class SupabaseAuthDataSource {
     await _client.auth.signOut();
   }
 
+  /// Authentication provider of the current session
+  /// (`email`, `google`, `apple`, or `null` if signed out).
+  String? get authProvider {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+    final raw = user.appMetadata['provider'];
+    return raw is String ? raw : null;
+  }
+
+  /// Changes the user's password after re-authenticating with the
+  /// current password. Throws [AuthException] if the current password
+  /// is incorrect or the update fails.
+  Future<void> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final email = _client.auth.currentUser?.email;
+    if (email == null || email.isEmpty) {
+      throw const AuthException('No authenticated user');
+    }
+    log.d('Re-authenticating before password change');
+    // Re-auth verifies the current password; throws on mismatch.
+    await _client.auth.signInWithPassword(
+      email: email,
+      password: currentPassword,
+    );
+    log.d('Updating password');
+    await _client.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
   /// Fetches full user profile from public.users table.
   Future<UserEntity> fetchUserProfile(String userId) async {
     final data = await _client

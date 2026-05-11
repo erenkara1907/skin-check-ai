@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:skincheck_ai/core/providers/theme_provider.dart';
 import 'package:skincheck_ai/features/settings/presentation/providers/settings_provider.dart';
 import 'package:skincheck_ai/features/settings/presentation/screens/settings_screen.dart';
 import 'package:skincheck_ai/features/subscription/presentation/providers/subscription_provider.dart';
 
+import '../../../../helpers/test_app.dart';
+
 void main() {
   Widget buildSubject({bool isPro = false}) {
-    return ProviderScope(
+    return pumpableTestApp(
+      const SettingsScreen(),
       overrides: [
         isProProvider.overrideWith((_) => isPro),
         themeModeNotifierProvider.overrideWith(ThemeModeNotifier.new),
@@ -16,7 +18,6 @@ void main() {
             .overrideWith(NotificationEnabled.new),
         reminderTimeProvider.overrideWith(ReminderTime.new),
       ],
-      child: const MaterialApp(home: SettingsScreen()),
     );
   }
 
@@ -50,7 +51,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sistem'), findsOneWidget);
-      expect(find.text('Acik'), findsOneWidget);
+      expect(find.text('Açık'), findsOneWidget);
       expect(find.text('Koyu'), findsOneWidget);
     });
 
@@ -58,7 +59,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Rutin Hatirlatma'), findsOneWidget);
+      expect(find.text('Rutin Hatırlatma'), findsOneWidget);
       expect(find.byType(Switch), findsOneWidget);
     });
 
@@ -68,16 +69,16 @@ void main() {
 
       final scrollable = find.byType(Scrollable).first;
       await tester.scrollUntilVisible(
-        find.text('Verilerimi Disa Aktar'), 200,
+        find.text('Verilerimi Dışa Aktar'), 200,
         scrollable: scrollable,
       );
-      expect(find.text('Verilerimi Disa Aktar'), findsOneWidget);
+      expect(find.text('Verilerimi Dışa Aktar'), findsOneWidget);
 
       await tester.scrollUntilVisible(
-        find.text('Hesabimi Sil'), 200,
+        find.text('Hesabımı Sil'), 200,
         scrollable: scrollable,
       );
-      expect(find.text('Hesabimi Sil'), findsOneWidget);
+      expect(find.text('Hesabımı Sil'), findsOneWidget);
     });
 
     testWidgets('renders about section tiles', (tester) async {
@@ -92,16 +93,16 @@ void main() {
       expect(find.text('Versiyon'), findsOneWidget);
 
       await tester.scrollUntilVisible(
-        find.text('Gizlilik Politikasi'), 200,
+        find.text('Gizlilik Politikası'), 200,
         scrollable: scrollable,
       );
-      expect(find.text('Gizlilik Politikasi'), findsOneWidget);
+      expect(find.text('Gizlilik Politikası'), findsOneWidget);
 
       await tester.scrollUntilVisible(
-        find.text('Kullanim Kosullari'), 200,
+        find.text('Kullanım Koşulları'), 200,
         scrollable: scrollable,
       );
-      expect(find.text('Kullanim Kosullari'), findsOneWidget);
+      expect(find.text('Kullanım Koşulları'), findsOneWidget);
 
       await tester.scrollUntilVisible(
         find.text('Lisanslar'), 200,
@@ -129,7 +130,7 @@ void main() {
       await tester.pumpWidget(buildSubject(isPro: false));
       await tester.pumpAndSettle();
 
-      expect(find.text('Ucretsiz'), findsOneWidget);
+      expect(find.text('Ücretsiz'), findsOneWidget);
     });
 
     testWidgets('shows current plan as pro', (tester) async {

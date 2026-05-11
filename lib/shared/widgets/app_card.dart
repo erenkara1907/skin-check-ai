@@ -42,31 +42,43 @@ class AppCard extends StatelessWidget {
     final glassBorder =
         isDark ? AppColors.glassBorderDark : AppColors.glassBorderLight;
 
+    final decoratedChild = Container(
+      decoration: BoxDecoration(
+        color: glassColor,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: glassBorder, width: 0.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: padding,
+      child: child,
+    );
+
+    final interactive = onTap == null
+        ? decoratedChild
+        : Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(borderRadius),
+              splashColor: AppColors.primary.withValues(alpha: 0.08),
+              highlightColor: AppColors.primary.withValues(alpha: 0.04),
+              child: decoratedChild,
+            ),
+          );
+
     return Padding(
       padding: margin ?? EdgeInsets.zero,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                color: glassColor,
-                borderRadius: BorderRadius.circular(borderRadius),
-                border: Border.all(color: glassBorder, width: 0.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-                    blurRadius: 24,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              padding: padding,
-              child: child,
-            ),
-          ),
+          child: interactive,
         ),
       ),
     );

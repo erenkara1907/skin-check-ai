@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/entities/product_entity.dart';
@@ -58,7 +59,7 @@ class ProductReasonDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Neden ${product.name}?',
+              context.l10n.whyProductTitle(product.name),
               style: AppTextStyles.titleMedium.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
@@ -87,7 +88,7 @@ class ProductReasonDialog extends StatelessWidget {
             // Matching concerns
             if (matchingConcerns.isNotEmpty) ...[
               Text(
-                'Eşleşen Sorunlar',
+                context.l10n.matchingConcerns,
                 style: AppTextStyles.labelMedium.copyWith(
                   color: Theme.of(context)
                       .colorScheme
@@ -111,7 +112,7 @@ class ProductReasonDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'Kapat',
+                context.l10n.closeButton,
                 style: AppTextStyles.labelLarge.copyWith(
                   color: AppColors.primary,
                 ),
@@ -124,17 +125,20 @@ class ProductReasonDialog extends StatelessWidget {
   }
 }
 
-/// Concern label translations.
-const _concernLabels = {
-  'acne': 'Akne',
-  'wrinkles': 'Kırışıklık',
-  'spots': 'Leke',
-  'pores': 'Gözenek',
-  'dryness': 'Kuruluk',
-  'oiliness': 'Yağlanma',
-  'darkCircles': 'Koyu Halka',
-  'redness': 'Kızarıklık',
-};
+/// Returns localized concern label for the given concern key.
+String _concernLabel(BuildContext context, String concern) {
+  final labels = {
+    'acne': context.l10n.acneConcern,
+    'wrinkles': context.l10n.wrinklesConcern,
+    'spots': context.l10n.spotsConcern,
+    'pores': context.l10n.poresConcern,
+    'dryness': context.l10n.drynessConcern,
+    'oiliness': context.l10n.oilinessConcern,
+    'darkCircles': context.l10n.darkCirclesConcern,
+    'redness': context.l10n.rednessConcern,
+  };
+  return labels[concern] ?? concern;
+}
 
 class _ConcernChip extends StatelessWidget {
   const _ConcernChip({required this.concern});
@@ -150,7 +154,7 @@ class _ConcernChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        _concernLabels[concern] ?? concern,
+        _concernLabel(context, concern),
         style: AppTextStyles.labelSmall.copyWith(
           color: AppColors.secondary,
           fontWeight: FontWeight.w600,

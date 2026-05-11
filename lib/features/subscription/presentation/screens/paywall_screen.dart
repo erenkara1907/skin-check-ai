@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../providers/subscription_provider.dart';
@@ -66,7 +67,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       _buildPlanCards(),
                       const SizedBox(height: 24),
                       PaywallCtaButton(
-                        label: '7 Gun Ucretsiz Dene',
+                        label: context.l10n.freeTrialButton,
                         isLoading: isLoading,
                         onPressed: _handlePurchase,
                       ),
@@ -131,7 +132,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          "Pro'ya Gec",
+          context.l10n.proUpgradeTitle,
           style: AppTextStyles.displayMedium.copyWith(
             color: isDark
                 ? AppColors.textPrimaryDark
@@ -140,7 +141,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Cilt bakim yolculugunu bir ust seviyeye tasiyin',
+          context.l10n.proUpgradeSubtitle,
           textAlign: TextAlign.center,
           style: AppTextStyles.bodyMedium.copyWith(
             color: isDark
@@ -156,18 +157,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     return Column(
       children: [
         PlanCard(
-          title: 'Yillik',
+          title: context.l10n.yearlyPlan,
           price: AppConstants.yearlyPrice,
-          period: '/yil',
-          badge: '%30 tasarruf',
+          period: context.l10n.yearlyPeriod,
+          badge: context.l10n.yearlyDiscount,
           isSelected: _isYearly,
           onTap: () => setState(() => _isYearly = true),
         ),
         const SizedBox(height: 12),
         PlanCard(
-          title: 'Aylik',
+          title: context.l10n.monthlyPlan,
           price: AppConstants.monthlyPrice,
-          period: '/ay',
+          period: context.l10n.monthlyPeriod,
           isSelected: !_isYearly,
           onTap: () => setState(() => _isYearly = false),
         ),
@@ -179,7 +180,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     return TextButton(
       onPressed: isLoading ? null : _handleRestore,
       child: Text(
-        'Satin almayi geri yukle',
+        context.l10n.restorePurchase,
         style: AppTextStyles.bodySmall.copyWith(
           color: AppColors.primary,
         ),
@@ -198,7 +199,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         TextButton(
           onPressed: () => _openUrl('https://skincheck.ai/privacy'),
           child: Text(
-            'Gizlilik',
+            context.l10n.privacyLink,
             style: AppTextStyles.labelSmall.copyWith(color: color),
           ),
         ),
@@ -206,7 +207,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         TextButton(
           onPressed: () => _openUrl('https://skincheck.ai/terms'),
           child: Text(
-            'Kullanim Kosullari',
+            context.l10n.termsLink,
             style: AppTextStyles.labelSmall.copyWith(color: color),
           ),
         ),

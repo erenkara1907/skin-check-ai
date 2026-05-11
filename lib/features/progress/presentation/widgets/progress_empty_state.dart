@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -26,7 +27,7 @@ class ProgressEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Henuz ilerleme verisi yok',
+              context.l10n.noProgressTitle,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: isDark
                     ? AppColors.textPrimaryDark
@@ -36,7 +37,7 @@ class ProgressEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ilk cilt analizini yaparak ilerleme\ntakibine basla!',
+              context.l10n.noProgressDescription,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: isDark
                     ? AppColors.textSecondaryDark
@@ -48,7 +49,7 @@ class ProgressEmptyState extends StatelessWidget {
             FilledButton.icon(
               onPressed: () => context.go('/analyze'),
               icon: const Icon(LucideIcons.scan),
-              label: const Text('Analiz Yap'),
+              label: Text(context.l10n.analyzeButton),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(

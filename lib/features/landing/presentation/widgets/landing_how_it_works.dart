@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -9,29 +10,31 @@ import '../../../../core/theme/app_text_styles.dart';
 class LandingHowItWorks extends StatelessWidget {
   const LandingHowItWorks({super.key});
 
-  static const _steps = [
-    _Step(
-      icon: LucideIcons.camera,
-      title: 'Selfie Çek',
-      description: 'Ön kameranı kullanarak hızlıca bir selfie çek.',
-    ),
-    _Step(
-      icon: LucideIcons.brain,
-      title: 'AI Analiz',
-      description: 'Yapay zekâ cildini 7 farklı bölgede analiz eder.',
-    ),
-    _Step(
-      icon: LucideIcons.sparkles,
-      title: 'Rutin Al',
-      description: 'Kişiselleştirilmiş bakım rutinini hemen uygula.',
-    ),
-  ];
+  /// Builds the steps list with localized strings.
+  static List<_Step> _buildSteps(BuildContext context) => [
+        _Step(
+          icon: LucideIcons.camera,
+          title: context.l10n.step1Title,
+          description: context.l10n.step1Desc,
+        ),
+        _Step(
+          icon: LucideIcons.brain,
+          title: context.l10n.step2Title,
+          description: context.l10n.step2Desc,
+        ),
+        _Step(
+          icon: LucideIcons.sparkles,
+          title: context.l10n.step3Title,
+          description: context.l10n.step3Desc,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isDesktop = screenWidth > 1024;
+    final steps = _buildSteps(context);
 
     return Container(
       width: double.infinity,
@@ -45,11 +48,11 @@ class LandingHowItWorks extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
             children: [
-              _buildSectionTitle(isDark),
+              _buildSectionTitle(context, isDark),
               const SizedBox(height: 48),
               isDesktop
                   ? Row(
-                      children: _steps.asMap().entries.map((entry) {
+                      children: steps.asMap().entries.map((entry) {
                         return Expanded(
                           child: _StepCard(
                             step: entry.value,
@@ -60,7 +63,7 @@ class LandingHowItWorks extends StatelessWidget {
                       }).toList(),
                     )
                   : Column(
-                      children: _steps.asMap().entries.map((entry) {
+                      children: steps.asMap().entries.map((entry) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 24),
                           child: _StepCard(
@@ -78,11 +81,11 @@ class LandingHowItWorks extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(bool isDark) {
+  Widget _buildSectionTitle(BuildContext context, bool isDark) {
     return Column(
       children: [
         Text(
-          'Nasıl Çalışır?',
+          context.l10n.howItWorksTitle,
           style: AppTextStyles.displaySmall.copyWith(
             color: isDark
                 ? AppColors.textPrimaryDark
@@ -91,7 +94,7 @@ class LandingHowItWorks extends StatelessWidget {
         ).animate().fadeIn(duration: 600.ms),
         const SizedBox(height: 8),
         Text(
-          '3 basit adımda cilt analizini tamamla',
+          context.l10n.howItWorksSubtitle,
           style: AppTextStyles.bodyLarge.copyWith(
             color: isDark
                 ? AppColors.textSecondaryDark

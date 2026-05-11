@@ -30,6 +30,17 @@ abstract class AuthRepository {
   /// Sign out the current user.
   Future<void> signOut();
 
+  /// Authentication provider of the current session
+  /// (`email`, `google`, `apple`, or `null` if signed out).
+  String? get authProvider;
+
+  /// Changes the user's password after re-authenticating with the
+  /// current password.
+  Future<void> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
+
   /// Fetches full user profile from database.
   Future<UserEntity> fetchUserProfile(String userId);
 }

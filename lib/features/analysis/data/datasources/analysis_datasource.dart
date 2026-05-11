@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/errors/analysis_failure.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../core/utils/retry.dart';
 
 /// Remote data source for skin analysis operations via Supabase.
 class AnalysisDataSource {
@@ -31,25 +33,47 @@ class AnalysisDataSource {
   }
 
   /// Call the analyze-skin edge function.
+  ///
+  /// Retries transient failures (503/504/408/429, socket/timeout,
+  /// SUPABASE_EDGE_RUNTIME_ERROR) up to 3 times with exponential backoff.
+  /// Any final error is wrapped in a typed [AnalysisFailure] so the UI
+  /// can show a localized message.
   Future<Map<String, dynamic>> invokeSkinAnalysis({
     required String userId,
     required String photoPath,
+    String locale = 'tr',
   }) async {
-    final response = await _client.functions.invoke(
-      'analyze-skin',
-      body: {
-        'user_id': userId,
-        'photo_path': photoPath,
-      },
-    );
+    try {
+      return await retryWithBackoff<Map<String, dynamic>>(
+        () async {
+          final response = await _client.functions.invoke(
+            'analyze-skin',
+            body: {
+              'user_id': userId,
+              'photo_path': photoPath,
+              'locale': locale,
+            },
+          );
 
-    if (response.status != 200) {
-      throw Exception(
-        'Edge function error: ${response.status}',
+          // Non-2xx responses don't always throw in supabase_flutter —
+          // normalize to a FunctionException so the classifier can see
+          // the status and decide whether to retry.
+          if (response.status < 200 || response.status >= 300) {
+            throw FunctionException(
+              status: response.status,
+              details: response.data,
+              reasonPhrase: 'Non-2xx response',
+            );
+          }
+
+          return response.data as Map<String, dynamic>;
+        },
+        retryIf: isTransientEdgeError,
+        opName: 'analyze-skin',
       );
+    } catch (e) {
+      throw AnalysisFailure.fromException(e);
     }
-
-    return response.data as Map<String, dynamic>;
   }
 
   /// Fetch a single analysis with its zone scores.
